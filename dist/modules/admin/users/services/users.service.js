@@ -18,13 +18,13 @@ const typeorm_1 = require("@nestjs/typeorm");
 const bcrypt = require("bcrypt");
 const admin_user_dto_1 = require("../../../../common/dto/admin-user.dto");
 const Pagination_dto_1 = require("../../../../common/dto/Pagination.dto");
-const user_entity_1 = require("../../../../common/entities/admin/users/user.entity");
+const user_entity_1 = require("../../../../common/entities/user.entity");
 const customException_1 = require("../../../../common/exceptions/customException");
 const validationException_1 = require("../../../../common/exceptions/validationException");
 const typeorm_2 = require("typeorm");
 let AdminUsersService = class AdminUsersService {
-    constructor(adminUserRepository, connection) {
-        this.adminUserRepository = adminUserRepository;
+    constructor(userRepository, connection) {
+        this.userRepository = userRepository;
         this.connection = connection;
     }
     async findAll(filter, pagination) {
@@ -36,13 +36,13 @@ let AdminUsersService = class AdminUsersService {
             if (filter.phone) {
                 whereCondition['phone'] = (0, typeorm_2.Equal)(filter.phone);
             }
-            const users = await this.adminUserRepository.find({
+            const users = await this.userRepository.find({
                 where: Object.assign({}, whereCondition),
                 order: { created_by: 'DESC' },
                 skip: pagination.skip,
                 take: pagination.limit,
             });
-            const total = await this.adminUserRepository.count({
+            const total = await this.userRepository.count({
                 where: Object.assign({}, whereCondition),
             });
             return [users, total];
@@ -53,8 +53,8 @@ let AdminUsersService = class AdminUsersService {
     }
     async create(createAdminUserDto, adminUser) {
         try {
-            const { full_name, phone, password, user_type } = createAdminUserDto;
-            const findExisting = await this.adminUserRepository.findOne({ phone });
+            const { name, phone, password, user_type } = createAdminUserDto;
+            const findExisting = await this.userRepository.findOne({ phone });
             if (findExisting) {
                 throw new validationException_1.ValidationException([
                     {
@@ -65,13 +65,13 @@ let AdminUsersService = class AdminUsersService {
             }
             const hashedPassword = await bcrypt.hash(password, 12);
             const data = {
-                full_name,
+                name,
                 phone,
                 user_type,
                 password: hashedPassword,
                 created_by: adminUser.id,
             };
-            const addedUserData = await this.adminUserRepository.save(data);
+            const addedUserData = await this.userRepository.save(data);
             return addedUserData;
         }
         catch (error) {
@@ -80,7 +80,7 @@ let AdminUsersService = class AdminUsersService {
     }
     async findAllList() {
         try {
-            const expectedData = await this.adminUserRepository.findAndCount({
+            const expectedData = await this.userRepository.findAndCount({
                 status: 1,
             });
             return expectedData;
@@ -91,7 +91,7 @@ let AdminUsersService = class AdminUsersService {
     }
     async findOne(id) {
         try {
-            const expectedData = await this.adminUserRepository.findOne({
+            const expectedData = await this.userRepository.findOne({
                 where: { id },
             });
             if (!expectedData) {
@@ -108,7 +108,7 @@ let AdminUsersService = class AdminUsersService {
             const whereCondition = {};
             whereCondition['phone'] = (0, typeorm_2.Equal)(updateAdminUserDto.phone);
             whereCondition['id'] = (0, typeorm_2.Not)((0, typeorm_2.Equal)(id));
-            const udEexpectedData = await this.adminUserRepository.findOne({
+            const udEexpectedData = await this.userRepository.findOne({
                 where: Object.assign({}, whereCondition),
             });
             if (udEexpectedData) {
@@ -119,14 +119,14 @@ let AdminUsersService = class AdminUsersService {
                     },
                 ]);
             }
-            await this.adminUserRepository.update({
+            await this.userRepository.update({
                 id: id,
             }, {
-                full_name: updateAdminUserDto.full_name,
+                name: updateAdminUserDto.name,
                 phone: updateAdminUserDto.phone,
                 updated_by: adminUser.id,
             });
-            const user = await this.adminUserRepository.findOne(id);
+            const user = await this.userRepository.findOne(id);
             return user;
         }
         catch (error) {
@@ -135,17 +135,17 @@ let AdminUsersService = class AdminUsersService {
     }
     async status(id, statusChangeAdminUserDto, adminUser) {
         try {
-            const expectedData = await this.adminUserRepository.findOne(id);
+            const expectedData = await this.userRepository.findOne(id);
             if (!expectedData) {
                 throw new common_1.NotFoundException('No Data Found!');
             }
-            await this.adminUserRepository.update({
+            await this.userRepository.update({
                 id: id,
             }, {
                 status: statusChangeAdminUserDto.status,
                 updated_by: adminUser.id,
             });
-            const user = await this.adminUserRepository.findOne(id);
+            const user = await this.userRepository.findOne(id);
             return user;
         }
         catch (error) {
@@ -154,7 +154,7 @@ let AdminUsersService = class AdminUsersService {
     }
     async remove(id, adminUser) {
         try {
-            const expectedData = await this.adminUserRepository.findOne({ id: id });
+            const expectedData = await this.userRepository.findOne({ id: id });
             if (!expectedData) {
                 throw new common_1.NotFoundException('No User Found!');
             }
@@ -164,9 +164,7 @@ let AdminUsersService = class AdminUsersService {
                 }, {
                     deleted_by: adminUser.id,
                 });
-                await manager
-                    .getRepository('admin_users')
-                    .softDelete(id);
+                await manager.getRepository('admin_users').softDelete(id);
                 return true;
             });
         }
@@ -176,14 +174,14 @@ let AdminUsersService = class AdminUsersService {
     }
     async finalDelete(id) {
         try {
-            const expectedData = await this.adminUserRepository.find({
+            const expectedData = await this.userRepository.find({
                 where: { id },
                 withDeleted: true,
             });
             if (!expectedData) {
                 throw new common_1.NotFoundException('No Data Found!');
             }
-            await this.adminUserRepository.delete(id);
+            await this.userRepository.delete(id);
             return true;
         }
         catch (error) {
@@ -193,7 +191,7 @@ let AdminUsersService = class AdminUsersService {
 };
 AdminUsersService = __decorate([
     (0, common_1.Injectable)(),
-    __param(0, (0, typeorm_1.InjectRepository)(user_entity_1.AdminUserEntity)),
+    __param(0, (0, typeorm_1.InjectRepository)(user_entity_1.UserEntity)),
     __metadata("design:paramtypes", [typeorm_2.Repository,
         typeorm_2.Connection])
 ], AdminUsersService);

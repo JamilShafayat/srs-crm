@@ -1,12 +1,12 @@
 
-INSERT INTO `admin_users` (`id`, `status`, `created_at`, `deleted_at`, `created_by`, `updated_by`, `deleted_by`, `full_name`, `phone`, `password`, `user_type`) VALUES
-('ee4e9927-e59a-4ce1-9379-1380db160a37', 1, '2021-04-15 15:42:33.000000', NULL, NULL, NULL, NULL, 'Super Admin', '01711033730', '$2b$10$n.QKmko3dpx6qZM06m6cLeQzlEwiTZ7WmPEAMAhrbsJpqJSZJ0O4i', 'SUPER_ADMIN');
+INSERT INTO `users` (`id`, `status`, `created_at`, `deleted_at`, `created_by`, `updated_by`, `deleted_by`, `name`, `phone`,`email`, `password`, `user_type`) VALUES
+('ee4e9927-e59a-4ce1-9379-1380db160a37', 1, '2021-04-15 15:42:33.000000', NULL, NULL, NULL, NULL, 'Super Admin', '01711033730', 'superadmin@gmail.com', '$2b$10$n.QKmko3dpx6qZM06m6cLeQzlEwiTZ7WmPEAMAhrbsJpqJSZJ0O4i', 'SUPER ADMIN');
 
-INSERT INTO `admin_users` (`id`, `status`, `created_at`, `deleted_at`, `created_by`, `updated_by`, `deleted_by`, `full_name`, `phone`, `password`, `user_type`) VALUES
-('ee4e9927-e59a-4ce1-9379-1380db160d86', 1, '2021-04-15 15:42:33.000000', NULL, NULL, NULL, NULL, 'Sub Super Admin', '01711033731', '$2b$10$n.QKmko3dpx6qZM06m6cLeQzlEwiTZ7WmPEAMAhrbsJpqJSZJ0O4i', 'SUB_SUPER_ADMIN');
+INSERT INTO `users` (`id`, `status`, `created_at`, `deleted_at`, `created_by`, `updated_by`, `deleted_by`, `name`, `phone`,`email`, `password`, `user_type`) VALUES
+('ee4e9927-e59a-4ce1-9379-1380db160d86', 1, '2021-04-15 15:42:33.000000', NULL, NULL, NULL, NULL, 'Sub Super Admin', '01711033731', 'subsuperadmin@gmail.com', '$2b$10$n.QKmko3dpx6qZM06m6cLeQzlEwiTZ7WmPEAMAhrbsJpqJSZJ0O4i', 'SUB SUPER ADMIN');
 
-INSERT INTO `admin_users` (`id`, `status`, `created_at`, `deleted_at`, `created_by`, `updated_by`, `deleted_by`, `full_name`, `phone`, `password`, `user_type`) VALUES
-('ee4e9927-e59a-4ce1-9379-1380db160d87', 1, '2021-04-15 15:42:33.000000', NULL, NULL, NULL, NULL, 'Admin', '01711033732', '$2b$10$n.QKmko3dpx6qZM06m6cLeQzlEwiTZ7WmPEAMAhrbsJpqJSZJ0O4i', 'ADMIN');
+INSERT INTO `users` (`id`, `status`, `created_at`, `deleted_at`, `created_by`, `updated_by`, `deleted_by`, `name`, `phone`,`email`, `password`, `user_type`) VALUES
+('ee4e9927-e59a-4ce1-9379-1380db160d87', 1, '2021-04-15 15:42:33.000000', NULL, NULL, NULL, NULL, 'Admin', '01711033732', 'admin@gmail.com', '$2b$10$n.QKmko3dpx6qZM06m6cLeQzlEwiTZ7WmPEAMAhrbsJpqJSZJ0O4i', 'ADMIN');
 
-INSERT INTO `admin_users` (`id`, `status`, `created_at`, `deleted_at`, `created_by`, `updated_by`, `deleted_by`, `full_name`, `phone`, `password`, `user_type`) VALUES
-('ee4e9927-e59a-4ce1-9379-1380db160d85', 1, '2021-04-15 15:42:33.000000', NULL, NULL, NULL, NULL, 'General User', '01711033733', '$2b$10$n.QKmko3dpx6qZM06m6cLeQzlEwiTZ7WmPEAMAhrbsJpqJSZJ0O4i', 'GENERAL_USER');
+INSERT INTO `users` (`id`, `status`, `created_at`, `deleted_at`, `created_by`, `updated_by`, `deleted_by`, `name`, `phone`,`email`, `password`, `user_type`) VALUES
+('ee4e9927-e59a-4ce1-9379-1380db160d85', 1, '2021-04-15 15:42:33.000000', NULL, NULL, NULL, NULL, 'General User', '01711033733', 'employee@gmail.com', '$2b$10$n.QKmko3dpx6qZM06m6cLeQzlEwiTZ7WmPEAMAhrbsJpqJSZJ0O4i', 'GENERAL EMPLOYEE');

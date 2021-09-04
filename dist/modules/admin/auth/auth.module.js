@@ -9,14 +9,14 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.AdminAuthModule = void 0;
 const common_1 = require("@nestjs/common");
 const typeorm_1 = require("@nestjs/typeorm");
-const user_entity_1 = require("../../../common/entities/admin/users/user.entity");
+const user_entity_1 = require("../../../common/entities/user.entity");
 const auth_controller_1 = require("./controllers/auth.controller");
 const auth_service_1 = require("./services/auth.service");
 let AdminAuthModule = class AdminAuthModule {
 };
 AdminAuthModule = __decorate([
     (0, common_1.Module)({
-        imports: [typeorm_1.TypeOrmModule.forFeature([user_entity_1.AdminUserEntity])],
+        imports: [typeorm_1.TypeOrmModule.forFeature([user_entity_1.UserEntity])],
         controllers: [auth_controller_1.AdminAuthController],
         providers: [auth_service_1.AdminAuthService],
     })

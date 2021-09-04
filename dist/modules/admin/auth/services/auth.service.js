@@ -19,7 +19,7 @@ const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const typeorm_2 = require("typeorm");
 const config_1 = require("../../../../common/configs/config");
-const user_entity_1 = require("../../../../common/entities/admin/users/user.entity");
+const user_entity_1 = require("../../../../common/entities/user.entity");
 const customException_1 = require("../../../../common/exceptions/customException");
 let AdminAuthService = class AdminAuthService {
     constructor(adminUserRepository) {
@@ -56,7 +56,7 @@ let AdminAuthService = class AdminAuthService {
 };
 AdminAuthService = __decorate([
     (0, common_1.Injectable)(),
-    __param(0, (0, typeorm_1.InjectRepository)(user_entity_1.AdminUserEntity)),
+    __param(0, (0, typeorm_1.InjectRepository)(user_entity_1.UserEntity)),
     __metadata("design:paramtypes", [typeorm_2.Repository])
 ], AdminAuthService);
 exports.AdminAuthService = AdminAuthService;

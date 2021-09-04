@@ -12,7 +12,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.MailService = void 0;
 const mailer_1 = require("@nestjs-modules/mailer");
 const common_1 = require("@nestjs/common");
-const user_entity_1 = require("../../common/entities/admin/users/user.entity");
+const user_entity_1 = require("../../common/entities/user.entity");
 let MailService = class MailService {
     constructor(mailerService) {
         this.mailerService = mailerService;

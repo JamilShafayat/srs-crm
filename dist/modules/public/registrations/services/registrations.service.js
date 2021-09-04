@@ -16,7 +16,7 @@ exports.RegistrationService = void 0;
 const common_1 = require("@nestjs/common");
 const typeorm_1 = require("@nestjs/typeorm");
 const bcrypt = require("bcrypt");
-const user_entity_1 = require("../../../../common/entities/admin/users/user.entity");
+const user_entity_1 = require("../../../../common/entities/user.entity");
 const user_type_enum_1 = require("../../../../common/enums/admin/user-type.enum");
 const customException_1 = require("../../../../common/exceptions/customException");
 const validationException_1 = require("../../../../common/exceptions/validationException");
@@ -40,7 +40,7 @@ let RegistrationService = class RegistrationService {
                     },
                 ]);
             }
-            const user_type = user_type_enum_1.UserTypeEnum.GENERAL_USER;
+            const user_type = user_type_enum_1.UserTypeEnum.GENERAL_EMPLOYEE;
             const hashedPassword = await bcrypt.hash(password, 12);
             const data = {
                 full_name,
@@ -60,7 +60,7 @@ let RegistrationService = class RegistrationService {
 };
 RegistrationService = __decorate([
     (0, common_1.Injectable)(),
-    __param(0, (0, typeorm_1.InjectRepository)(user_entity_1.AdminUserEntity)),
+    __param(0, (0, typeorm_1.InjectRepository)(user_entity_1.UserEntity)),
     __metadata("design:paramtypes", [typeorm_2.Repository,
         typeorm_2.Connection,
         mail_service_1.MailService])

@@ -6,12 +6,12 @@ export class UpdateAdminUserDto {
   @ApiProperty({
     type: String,
     description: 'User Full Name',
-    default: 'Md Salman Sajib',
+    default: 'Mr. Name',
   })
   @IsString()
   @MinLength(3)
   @MaxLength(200)
-  full_name: string;
+  name: string;
 
   @ApiProperty({
     type: String,

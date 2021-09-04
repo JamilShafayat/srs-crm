@@ -16,20 +16,20 @@ const class_validator_1 = require("class-validator");
 const user_type_enum_1 = require("./../../../../common/enums/admin/user-type.enum");
 class CreateAdminUserDto {
     static _OPENAPI_METADATA_FACTORY() {
-        return { full_name: { required: true, type: () => String, minLength: 3, maxLength: 200 }, phone: { required: true, type: () => String, minLength: 10, maxLength: 200 }, password: { required: true, type: () => String, minLength: 6, maxLength: 200 }, user_type: { required: true, type: () => String } };
+        return { name: { required: true, type: () => String, minLength: 3, maxLength: 200 }, phone: { required: true, type: () => String, minLength: 10, maxLength: 200 }, password: { required: true, type: () => String, minLength: 6, maxLength: 200 }, user_type: { required: true, type: () => String } };
     }
 }
 __decorate([
     (0, swagger_1.ApiProperty)({
         type: String,
         description: 'User Full Name',
-        default: 'Md Salman Sajib',
+        default: 'Mr. Name',
     }),
     (0, class_validator_1.IsString)(),
     (0, class_validator_1.MinLength)(3),
     (0, class_validator_1.MaxLength)(200),
     __metadata("design:type", String)
-], CreateAdminUserDto.prototype, "full_name", void 0);
+], CreateAdminUserDto.prototype, "name", void 0);
 __decorate([
     (0, swagger_1.ApiProperty)({
         type: String,

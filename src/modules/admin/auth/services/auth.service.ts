@@ -4,15 +4,15 @@ import * as bcrypt from 'bcrypt';
 import * as jwt from 'jsonwebtoken';
 import { Repository } from 'typeorm';
 import { ADMIN_JWT_SECRET } from '../../../../common/configs/config';
-import { AdminUserEntity } from '../../../../common/entities/admin/users/user.entity';
+import { UserEntity } from '../../../../common/entities/user.entity';
 import { CustomException } from '../../../../common/exceptions/customException';
 import { AdminAuthDto } from '../dto/auth.dto';
 
 @Injectable()
 export class AdminAuthService {
   constructor(
-    @InjectRepository(AdminUserEntity)
-    private readonly adminUserRepository: Repository<AdminUserEntity>,
+    @InjectRepository(UserEntity)
+    private readonly adminUserRepository: Repository<UserEntity>,
   ) {}
 
   async auth(
@@ -55,7 +55,7 @@ export class AdminAuthService {
     }
   }
 
-  login(user: AdminUserEntity): string {
+  login(user: UserEntity): string {
     const payload = { id: user.id, user_type: user.user_type };
     return jwt.sign(payload, ADMIN_JWT_SECRET);
   }
