@@ -9,12 +9,12 @@ var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.StatusChangeAdminUserDto = void 0;
+exports.StatusChangeUserDto = void 0;
 const openapi = require("@nestjs/swagger");
 const swagger_1 = require("@nestjs/swagger");
 const class_validator_1 = require("class-validator");
 const status_enum_1 = require("../../../../common/enums/status/status.enum");
-class StatusChangeAdminUserDto {
+class StatusChangeUserDto {
     static _OPENAPI_METADATA_FACTORY() {
         return { status: { required: true, type: () => Number } };
     }
@@ -22,11 +22,11 @@ class StatusChangeAdminUserDto {
 __decorate([
     (0, swagger_1.ApiProperty)({
         type: Number,
-        description: 'Country Status',
+        description: 'User Status',
         default: status_enum_1.StatusTypeEnum.ACTIVE,
     }),
     (0, class_validator_1.IsEnum)(status_enum_1.StatusTypeEnum, { message: 'Status Should be 0 or 1' }),
     __metadata("design:type", Number)
-], StatusChangeAdminUserDto.prototype, "status", void 0);
-exports.StatusChangeAdminUserDto = StatusChangeAdminUserDto;
+], StatusChangeUserDto.prototype, "status", void 0);
+exports.StatusChangeUserDto = StatusChangeUserDto;
 //# sourceMappingURL=status-change-user.dto.js.map

@@ -10,6 +10,8 @@ exports.AdminModule = exports.AdminModuleList = void 0;
 const common_1 = require("@nestjs/common");
 const file_upload_module_1 = require("../../file-upload/file-upload.module");
 const auth_module_1 = require("./auth/auth.module");
+const client_module_1 = require("./client/client.module");
+const designation_module_1 = require("./designation/designation.module");
 const text_module_1 = require("./testPart/text.module");
 const users_module_1 = require("./users/users.module");
 exports.AdminModuleList = [
@@ -17,6 +19,8 @@ exports.AdminModuleList = [
     users_module_1.UsersModule,
     file_upload_module_1.FileUploadModule,
     text_module_1.TestsModule,
+    designation_module_1.DesignationModule,
+    client_module_1.ClientModule,
 ];
 let AdminModule = class AdminModule {
 };

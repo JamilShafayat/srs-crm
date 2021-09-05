@@ -1,3 +1,3 @@
-export declare class StatusChangeAdminUserDto {
+export declare class StatusChangeUserDto {
     status: number;
 }

@@ -24,18 +24,18 @@ const payload_response_dto_1 = require("../../../../common/dto/payload-response.
 const auth_guard_1 = require("../../../../common/guard/admin/auth.guard");
 const dtoValidation_pipe_1 = require("../../../../common/pipes/dtoValidation.pipe");
 const typeorm_1 = require("typeorm");
-const admin_user_id_param_dto_1 = require("../dto/admin-user-id-param.dto");
-const admin_user_list_dto_1 = require("../dto/admin-user-list.dto");
 const create_user_dto_1 = require("../dto/create-user.dto");
 const status_change_user_dto_1 = require("../dto/status-change-user.dto");
 const update_user_dto_1 = require("../dto/update-user.dto");
+const user_filter_list_dto_1 = require("../dto/user-filter-list.dto");
+const user_id_param_dto_1 = require("../dto/user-id-param.dto");
 const users_service_1 = require("../services/users.service");
 let UsersController = class UsersController {
-    constructor(adminUsersService) {
-        this.adminUsersService = adminUsersService;
+    constructor(usersService) {
+        this.usersService = usersService;
     }
     async findAll(filter, pagination) {
-        const [users, total] = await this.adminUsersService.findAll(filter, pagination);
+        const [users, total] = await this.usersService.findAll(filter, pagination);
         return new payload_response_dto_1.PayloadResponseDTO({
             statusCode: common_1.HttpStatus.OK,
             message: 'All users Fetched',
@@ -47,9 +47,9 @@ let UsersController = class UsersController {
             data: { users },
         });
     }
-    async create(adminUser, createAdminUserDto, manager) {
-        console.log(createAdminUserDto);
-        const user = await this.adminUsersService.create(createAdminUserDto, adminUser);
+    async create(adminUser, createUserDto, manager) {
+        console.log(createUserDto);
+        const user = await this.usersService.create(createUserDto, adminUser);
         return new payload_response_dto_1.PayloadResponseDTO({
             statusCode: common_1.HttpStatus.OK,
             message: 'User Entry Successful',
@@ -57,7 +57,7 @@ let UsersController = class UsersController {
         });
     }
     async findAllList() {
-        const [user] = await this.adminUsersService.findAllList();
+        const [user] = await this.usersService.findAllList();
         return new payload_response_dto_1.PayloadResponseDTO({
             statusCode: common_1.HttpStatus.OK,
             message: 'All Active user Fetched',
@@ -65,42 +65,42 @@ let UsersController = class UsersController {
         });
     }
     async findOne(params) {
-        const user = await this.adminUsersService.findOne(params.id);
+        const user = await this.usersService.findOne(params.id);
         return new payload_response_dto_1.PayloadResponseDTO({
             statusCode: common_1.HttpStatus.OK,
             message: 'Single user Fetched',
             data: { user },
         });
     }
-    async update(adminUser, params, updateAdminUserDto) {
-        const user = await this.adminUsersService.update(params.id, updateAdminUserDto, adminUser);
+    async update(adminUser, params, updateUserDto) {
+        const user = await this.usersService.update(params.id, updateUserDto, adminUser);
         return new payload_response_dto_1.PayloadResponseDTO({
             statusCode: common_1.HttpStatus.OK,
             message: 'Data Updated',
             data: { user },
         });
     }
-    async status(adminUser, params, statusChangeAdminUserDto) {
-        const user = await this.adminUsersService.status(params.id, statusChangeAdminUserDto, adminUser);
+    async status(adminUser, params, statusChangeUserDto) {
+        const user = await this.usersService.status(params.id, statusChangeUserDto, adminUser);
         return new payload_response_dto_1.PayloadResponseDTO({
             statusCode: common_1.HttpStatus.OK,
-            message: 'user Updated',
+            message: 'User Updated',
             data: { user },
         });
     }
     async remove(adminUser, params) {
-        await this.adminUsersService.remove(params.id, adminUser);
+        await this.usersService.remove(params.id, adminUser);
         return new payload_response_dto_1.PayloadResponseDTO({
             statusCode: common_1.HttpStatus.OK,
-            message: 'Data Soft Deleted',
+            message: 'User Soft Deleted',
             data: {},
         });
     }
     async finalDelete(params) {
-        await this.adminUsersService.finalDelete(params.id);
+        await this.usersService.finalDelete(params.id);
         return new payload_response_dto_1.PayloadResponseDTO({
             statusCode: common_1.HttpStatus.OK,
-            message: 'Data Completely Deleted',
+            message: 'User Completely Deleted',
             data: {},
         });
     }
@@ -112,21 +112,21 @@ __decorate([
     __param(0, (0, common_1.Query)()),
     __param(1, (0, pagination_decorator_1.Pagination)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [admin_user_list_dto_1.AdminUserListDto,
+    __metadata("design:paramtypes", [user_filter_list_dto_1.UserFilterListDto,
         Pagination_dto_1.PaginationDto]),
     __metadata("design:returntype", Promise)
 ], UsersController.prototype, "findAll", null);
 __decorate([
     (0, common_1.Post)(),
-    (0, swagger_1.ApiResponse)({ description: 'Admin User Add', status: common_1.HttpStatus.OK }),
-    (0, swagger_1.ApiBody)({ type: create_user_dto_1.CreateAdminUserDto }),
+    (0, swagger_1.ApiResponse)({ description: 'User Create', status: common_1.HttpStatus.OK }),
+    (0, swagger_1.ApiBody)({ type: create_user_dto_1.CreateUserDto }),
     openapi.ApiResponse({ status: 201, type: require("../../../../common/dto/payload-response.dto").PayloadResponseDTO }),
     __param(0, (0, admin_user_decorator_1.AdminUser)()),
     __param(1, (0, common_1.Body)(new dtoValidation_pipe_1.DtoValidationPipe())),
     __param(2, (0, typeorm_1.TransactionManager)()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [admin_user_dto_1.AdminUserDto,
-        create_user_dto_1.CreateAdminUserDto,
+        create_user_dto_1.CreateUserDto,
         typeorm_1.EntityManager]),
     __metadata("design:returntype", Promise)
 ], UsersController.prototype, "create", null);
@@ -144,20 +144,20 @@ __decorate([
     openapi.ApiResponse({ status: 200, type: require("../../../../common/dto/payload-response.dto").PayloadResponseDTO }),
     __param(0, (0, common_1.Param)(new dtoValidation_pipe_1.DtoValidationPipe())),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [admin_user_id_param_dto_1.AdminUserIdParamDto]),
+    __metadata("design:paramtypes", [user_id_param_dto_1.UserIdParamDto]),
     __metadata("design:returntype", Promise)
 ], UsersController.prototype, "findOne", null);
 __decorate([
     (0, common_1.Put)(':id'),
-    (0, swagger_1.ApiResponse)({ description: 'Single User Fetched', status: common_1.HttpStatus.OK }),
+    (0, swagger_1.ApiResponse)({ description: 'Single User Updated', status: common_1.HttpStatus.OK }),
     openapi.ApiResponse({ status: 200, type: require("../../../../common/dto/payload-response.dto").PayloadResponseDTO }),
     __param(0, (0, admin_user_decorator_1.AdminUser)()),
     __param(1, (0, common_1.Param)(new dtoValidation_pipe_1.DtoValidationPipe())),
     __param(2, (0, common_1.Body)(new dtoValidation_pipe_1.DtoValidationPipe())),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [admin_user_dto_1.AdminUserDto,
-        admin_user_id_param_dto_1.AdminUserIdParamDto,
-        update_user_dto_1.UpdateAdminUserDto]),
+        user_id_param_dto_1.UserIdParamDto,
+        update_user_dto_1.UpdateUserDto]),
     __metadata("design:returntype", Promise)
 ], UsersController.prototype, "update", null);
 __decorate([
@@ -172,8 +172,8 @@ __decorate([
     __param(2, (0, common_1.Body)(new dtoValidation_pipe_1.DtoValidationPipe())),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [admin_user_dto_1.AdminUserDto,
-        admin_user_id_param_dto_1.AdminUserIdParamDto,
-        status_change_user_dto_1.StatusChangeAdminUserDto]),
+        user_id_param_dto_1.UserIdParamDto,
+        status_change_user_dto_1.StatusChangeUserDto]),
     __metadata("design:returntype", Promise)
 ], UsersController.prototype, "status", null);
 __decorate([
@@ -184,7 +184,7 @@ __decorate([
     __param(1, (0, common_1.Param)(new dtoValidation_pipe_1.DtoValidationPipe())),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [admin_user_dto_1.AdminUserDto,
-        admin_user_id_param_dto_1.AdminUserIdParamDto]),
+        user_id_param_dto_1.UserIdParamDto]),
     __metadata("design:returntype", Promise)
 ], UsersController.prototype, "remove", null);
 __decorate([
@@ -192,7 +192,7 @@ __decorate([
     openapi.ApiResponse({ status: 200, type: require("../../../../common/dto/payload-response.dto").PayloadResponseDTO }),
     __param(0, (0, common_1.Param)(new dtoValidation_pipe_1.DtoValidationPipe())),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [admin_user_id_param_dto_1.AdminUserIdParamDto]),
+    __metadata("design:paramtypes", [user_id_param_dto_1.UserIdParamDto]),
     __metadata("design:returntype", Promise)
 ], UsersController.prototype, "finalDelete", null);
 UsersController = __decorate([
@@ -201,7 +201,7 @@ UsersController = __decorate([
     (0, common_1.UseGuards)(auth_guard_1.AuthGuard),
     (0, swagger_1.ApiBearerAuth)('JWT'),
     (0, swagger_1.ApiUnauthorizedResponse)({ description: 'Invalid Credential' }),
-    __metadata("design:paramtypes", [users_service_1.AdminUsersService])
+    __metadata("design:paramtypes", [users_service_1.UsersService])
 ], UsersController);
 exports.UsersController = UsersController;
 //# sourceMappingURL=users.controller.js.map

@@ -2,27 +2,27 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { AdminUserDto } from 'src/common/dto/admin-user.dto';
 import { PaginationDto } from 'src/common/dto/Pagination.dto';
-import { DesignationEntity } from 'src/common/entities/designation.entity';
+import { ClientEntity } from 'src/common/entities/client.entity';
 import { CustomException } from 'src/common/exceptions/customException';
 import { ValidationException } from 'src/common/exceptions/validationException';
 import { Connection, Equal, Repository } from 'typeorm';
-import { CreateDesignationDto } from '../dto/create-designation.dto';
-import { DesignationListDto } from '../dto/designation-list.dto';
-import { StatusChangeDesignationDto } from '../dto/status-change-designation.dto';
-import { UpdateDesignationDto } from '../dto/update-designation-dto';
+import { ClientFilterListDto } from '../dto/client-filter-list.dto';
+import { CreateClientDto } from '../dto/create-client.dto';
+import { StatusChangeClientDto } from '../dto/status-change-client.dto';
+import { UpdateClientDto } from '../dto/update-client.dto';
 
 @Injectable()
-export class DesignationService {
+export class ClientService {
   constructor(
-    @InjectRepository(DesignationEntity)
-    private readonly designationRepository: Repository<DesignationEntity>,
+    @InjectRepository(ClientEntity)
+    private readonly clientRepository: Repository<ClientEntity>,
     private connection: Connection,
   ) {}
 
   async findAll(
-    filter: DesignationListDto,
+    filter: ClientFilterListDto,
     pagination: PaginationDto,
-  ): Promise<[DesignationEntity[], number]> {
+  ): Promise<[ClientEntity[], number]> {
     try {
       const whereCondition = {};
 
@@ -31,56 +31,64 @@ export class DesignationService {
         whereCondition['status'] = Equal(filter.status);
       }
 
-      //find designations
-      const designations = await this.designationRepository.find({
+      //state filter
+      // if (filter.phone) {
+      //   whereCondition['phone'] = Equal(filter.phone);
+      // }
+
+      //find users
+      const clients = await this.clientRepository.find({
         where: {
           ...whereCondition,
         },
         order: { created_by: 'DESC' },
         skip: pagination.skip,
         take: pagination.limit,
+        relations: ['user_info'],
       });
 
       //count total categories
-      const total = await this.designationRepository.count({
+      const total = await this.clientRepository.count({
         where: { ...whereCondition },
       });
 
       // Return Fetched Data
-      return [designations, total];
+      return [clients, total];
     } catch (error) {
       throw new CustomException(error);
     }
   }
 
-  async create(CreateDesignationDto: CreateDesignationDto, user: AdminUserDto) {
+  async create(createClientDto: CreateClientDto, user: AdminUserDto) {
     try {
-      const { name } = CreateDesignationDto;
+      const { full_name, address, user_id } = createClientDto;
 
-      //find existing designation
-      const findExisting = await this.designationRepository.findOne({ name });
+      //find Existing Entry
+      const findExisting = await this.clientRepository.findOne({ user_id });
 
-      // If found designation
+      // Entry if found
       if (findExisting) {
         // throw an exception
         throw new ValidationException([
           {
-            field: 'name',
-            message: 'This Designation Name Already Exists.',
+            field: 'user_id',
+            message: 'User Already  Exists.',
           },
         ]);
       }
 
+      //Data store
       const data = {
-        name,
+        full_name,
+        address,
+        user_id,
         created_by: user.id,
       };
 
-      // Designation store
-      const addedDesignationData = await this.designationRepository.save(data);
+      const addedClientData = await this.clientRepository.save(data);
 
       // Created Data Return
-      return addedDesignationData;
+      return addedClientData;
     } catch (error) {
       throw new CustomException(error);
     }
@@ -89,7 +97,7 @@ export class DesignationService {
   async findAllList() {
     try {
       // All Active Data Fetch
-      const expectedData = await this.designationRepository.findAndCount({
+      const expectedData = await this.clientRepository.findAndCount({
         status: 1,
       });
 
@@ -100,16 +108,16 @@ export class DesignationService {
     }
   }
 
-  async findOne(id: string): Promise<DesignationEntity> {
+  async findOne(id: string): Promise<ClientEntity> {
     try {
-      // Single Designation Fetch
-      const expectedData = await this.designationRepository.findOne({
+      // Single client fetch
+      const expectedData = await this.clientRepository.findOne({
         where: { id },
       });
 
-      // Designation not found throw an error.
+      // User not found throw an error.
       if (!expectedData) {
-        throw new NotFoundException('No Data Found!');
+        throw new NotFoundException('No Client Found!');
       }
       return expectedData;
     } catch (error) {
@@ -119,26 +127,28 @@ export class DesignationService {
 
   async update(
     id: string,
-    updateDesignationDto: UpdateDesignationDto,
+    updateClientDto: UpdateClientDto,
     user: AdminUserDto,
   ) {
     try {
       //update data
-      await this.designationRepository.update(
+      await this.clientRepository.update(
         {
           id: id,
         },
         {
-          name: updateDesignationDto.name,
+          full_name: updateClientDto.full_name,
+          address: updateClientDto.address,
+          user_id: updateClientDto.user_id,
           updated_by: user.id,
         },
       );
 
       // Updated row getting
-      const designationData = await this.designationRepository.findOne(id);
+      const client = await this.clientRepository.findOne(id);
 
       //return updated row
-      return designationData;
+      return client;
     } catch (error) {
       throw new CustomException(error);
     }
@@ -146,32 +156,34 @@ export class DesignationService {
 
   async status(
     id: string,
-    statusChangeDesignationDto: StatusChangeDesignationDto,
+    statusChangeClientDto: StatusChangeClientDto,
     user: AdminUserDto,
   ) {
     try {
-      // Find data
-      const expectedData = await this.designationRepository.findOne(id);
+      // Find user
+      const expectedData = await this.clientRepository.findOne(id);
 
-      // data not found throw an error.
+      // client not found throw an error.
       if (!expectedData) {
-        throw new NotFoundException('No Data Found!');
+        throw new NotFoundException('No Client Found!');
       }
 
-      //update data Status
-      await this.designationRepository.update(
+      //update client status
+      await this.clientRepository.update(
         {
           id: id,
         },
         {
-          status: statusChangeDesignationDto.status,
+          status: statusChangeClientDto.status,
           updated_by: user.id,
         },
       );
 
-      const test = await this.designationRepository.findOne(id);
+      // Updated user fetch
+      const client = await this.clientRepository.findOne(id);
 
-      return test;
+      //return updated client
+      return client;
     } catch (error) {
       throw new CustomException(error);
     }
@@ -179,17 +191,17 @@ export class DesignationService {
 
   async remove(id: string, user: AdminUserDto) {
     try {
-      // Find test
-      const expectedData = await this.designationRepository.findOne({ id: id });
+      // Find client
+      const expectedData = await this.clientRepository.findOne({ id: id });
 
-      // Test not found throw an error.
+      // Client not found throw an error.
       if (!expectedData) {
-        throw new NotFoundException('No Test Found!');
+        throw new NotFoundException('No Client Found!');
       }
 
       await this.connection.transaction(async (manager) => {
         //Update Deleted By
-        await manager.getRepository<DesignationEntity>('designations').update(
+        await manager.getRepository<ClientEntity>('clients').update(
           {
             id: id,
           },
@@ -198,10 +210,8 @@ export class DesignationService {
           },
         );
 
-        //Soft Delete Test
-        await manager
-          .getRepository<DesignationEntity>('designations')
-          .softDelete(id);
+        //Soft delete client
+        await manager.getRepository<ClientEntity>('clients').softDelete(id);
         return true;
       });
     } catch (error) {
@@ -211,19 +221,19 @@ export class DesignationService {
 
   async finalDelete(id: string) {
     try {
-      // Find test data
-      const expectedData = await this.designationRepository.find({
+      // Find client
+      const expectedData = await this.clientRepository.find({
         where: { id },
         withDeleted: true,
       });
 
       // Data not found throw an error.
       if (!expectedData) {
-        throw new NotFoundException('No Data Found!');
+        throw new NotFoundException('No Client Found!');
       }
 
       //Delete data
-      await this.designationRepository.delete(id);
+      await this.clientRepository.delete(id);
 
       //Return
       return true;

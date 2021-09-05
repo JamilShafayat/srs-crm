@@ -9,11 +9,11 @@ var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.AdminUserIdParamDto = void 0;
+exports.UserIdParamDto = void 0;
 const openapi = require("@nestjs/swagger");
 const swagger_1 = require("@nestjs/swagger");
 const class_validator_1 = require("class-validator");
-class AdminUserIdParamDto {
+class UserIdParamDto {
     static _OPENAPI_METADATA_FACTORY() {
         return { id: { required: true, type: () => String, minLength: 10, maxLength: 200 } };
     }
@@ -24,6 +24,6 @@ __decorate([
     (0, class_validator_1.MinLength)(10),
     (0, class_validator_1.MaxLength)(200),
     __metadata("design:type", String)
-], AdminUserIdParamDto.prototype, "id", void 0);
-exports.AdminUserIdParamDto = AdminUserIdParamDto;
+], UserIdParamDto.prototype, "id", void 0);
+exports.UserIdParamDto = UserIdParamDto;
 //# sourceMappingURL=admin-user-id-param.dto.js.map

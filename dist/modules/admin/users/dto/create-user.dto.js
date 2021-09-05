@@ -9,27 +9,27 @@ var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.CreateAdminUserDto = void 0;
+exports.CreateUserDto = void 0;
 const openapi = require("@nestjs/swagger");
 const swagger_1 = require("@nestjs/swagger");
 const class_validator_1 = require("class-validator");
 const user_type_enum_1 = require("./../../../../common/enums/admin/user-type.enum");
-class CreateAdminUserDto {
+class CreateUserDto {
     static _OPENAPI_METADATA_FACTORY() {
-        return { name: { required: true, type: () => String, minLength: 3, maxLength: 200 }, phone: { required: true, type: () => String, minLength: 10, maxLength: 200 }, password: { required: true, type: () => String, minLength: 6, maxLength: 200 }, user_type: { required: true, type: () => String } };
+        return { name: { required: true, type: () => String, minLength: 3, maxLength: 200 }, phone: { required: true, type: () => String, minLength: 10, maxLength: 200 }, email: { required: true, type: () => String, minLength: 10, maxLength: 200 }, password: { required: true, type: () => String, minLength: 6, maxLength: 200 }, user_type: { required: true, type: () => String } };
     }
 }
 __decorate([
     (0, swagger_1.ApiProperty)({
         type: String,
-        description: 'User Full Name',
+        description: 'User Name',
         default: 'Mr. Name',
     }),
     (0, class_validator_1.IsString)(),
     (0, class_validator_1.MinLength)(3),
     (0, class_validator_1.MaxLength)(200),
     __metadata("design:type", String)
-], CreateAdminUserDto.prototype, "name", void 0);
+], CreateUserDto.prototype, "name", void 0);
 __decorate([
     (0, swagger_1.ApiProperty)({
         type: String,
@@ -40,14 +40,26 @@ __decorate([
     (0, class_validator_1.MinLength)(10),
     (0, class_validator_1.MaxLength)(200),
     __metadata("design:type", String)
-], CreateAdminUserDto.prototype, "phone", void 0);
+], CreateUserDto.prototype, "phone", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({
+        type: String,
+        description: 'User Email',
+        default: 'email@gmail.com',
+    }),
+    (0, class_validator_1.MinLength)(10),
+    (0, class_validator_1.MaxLength)(200),
+    (0, class_validator_1.IsEmail)(),
+    (0, class_validator_1.IsNotEmpty)(),
+    __metadata("design:type", String)
+], CreateUserDto.prototype, "email", void 0);
 __decorate([
     (0, swagger_1.ApiProperty)({ type: String, description: 'Password', default: '123456' }),
     (0, class_validator_1.IsString)(),
     (0, class_validator_1.MinLength)(6),
     (0, class_validator_1.MaxLength)(200),
     __metadata("design:type", String)
-], CreateAdminUserDto.prototype, "password", void 0);
+], CreateUserDto.prototype, "password", void 0);
 __decorate([
     (0, swagger_1.ApiProperty)({
         type: String,
@@ -56,6 +68,6 @@ __decorate([
     }),
     (0, class_validator_1.IsEnum)(user_type_enum_1.UserTypeEnum, { message: 'User Type' }),
     __metadata("design:type", String)
-], CreateAdminUserDto.prototype, "user_type", void 0);
-exports.CreateAdminUserDto = CreateAdminUserDto;
+], CreateUserDto.prototype, "user_type", void 0);
+exports.CreateUserDto = CreateUserDto;
 //# sourceMappingURL=create-user.dto.js.map

@@ -12,7 +12,7 @@ var __param = (this && this.__param) || function (paramIndex, decorator) {
     return function (target, key) { decorator(target, key, paramIndex); }
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.AdminUsersService = void 0;
+exports.UsersService = void 0;
 const common_1 = require("@nestjs/common");
 const typeorm_1 = require("@nestjs/typeorm");
 const bcrypt = require("bcrypt");
@@ -22,7 +22,7 @@ const user_entity_1 = require("../../../../common/entities/user.entity");
 const customException_1 = require("../../../../common/exceptions/customException");
 const validationException_1 = require("../../../../common/exceptions/validationException");
 const typeorm_2 = require("typeorm");
-let AdminUsersService = class AdminUsersService {
+let UsersService = class UsersService {
     constructor(userRepository, connection) {
         this.userRepository = userRepository;
         this.connection = connection;
@@ -51,9 +51,9 @@ let AdminUsersService = class AdminUsersService {
             throw new customException_1.CustomException(error);
         }
     }
-    async create(createAdminUserDto, adminUser) {
+    async create(createUserDto, adminUser) {
         try {
-            const { name, phone, password, user_type } = createAdminUserDto;
+            const { name, phone, password, user_type } = createUserDto;
             const findExisting = await this.userRepository.findOne({ phone });
             if (findExisting) {
                 throw new validationException_1.ValidationException([
@@ -103,27 +103,27 @@ let AdminUsersService = class AdminUsersService {
             throw new customException_1.CustomException(error);
         }
     }
-    async update(id, updateAdminUserDto, adminUser) {
+    async update(id, updateUserDto, adminUser) {
         try {
             const whereCondition = {};
-            whereCondition['phone'] = (0, typeorm_2.Equal)(updateAdminUserDto.phone);
+            whereCondition['phone'] = (0, typeorm_2.Equal)(updateUserDto.phone);
             whereCondition['id'] = (0, typeorm_2.Not)((0, typeorm_2.Equal)(id));
-            const udEexpectedData = await this.userRepository.findOne({
+            const unEexpectedData = await this.userRepository.findOne({
                 where: Object.assign({}, whereCondition),
             });
-            if (udEexpectedData) {
+            if (unEexpectedData) {
                 throw new validationException_1.ValidationException([
                     {
                         field: 'phone',
-                        message: 'Phone Number Already  Exists with another User.',
+                        message: 'Phone Number Already Exists with another User.',
                     },
                 ]);
             }
             await this.userRepository.update({
                 id: id,
             }, {
-                name: updateAdminUserDto.name,
-                phone: updateAdminUserDto.phone,
+                name: updateUserDto.name,
+                phone: updateUserDto.phone,
                 updated_by: adminUser.id,
             });
             const user = await this.userRepository.findOne(id);
@@ -133,7 +133,7 @@ let AdminUsersService = class AdminUsersService {
             throw new customException_1.CustomException(error);
         }
     }
-    async status(id, statusChangeAdminUserDto, adminUser) {
+    async status(id, statusChangeUserDto, adminUser) {
         try {
             const expectedData = await this.userRepository.findOne(id);
             if (!expectedData) {
@@ -142,7 +142,7 @@ let AdminUsersService = class AdminUsersService {
             await this.userRepository.update({
                 id: id,
             }, {
-                status: statusChangeAdminUserDto.status,
+                status: statusChangeUserDto.status,
                 updated_by: adminUser.id,
             });
             const user = await this.userRepository.findOne(id);
@@ -189,11 +189,11 @@ let AdminUsersService = class AdminUsersService {
         }
     }
 };
-AdminUsersService = __decorate([
+UsersService = __decorate([
     (0, common_1.Injectable)(),
     __param(0, (0, typeorm_1.InjectRepository)(user_entity_1.UserEntity)),
     __metadata("design:paramtypes", [typeorm_2.Repository,
         typeorm_2.Connection])
-], AdminUsersService);
-exports.AdminUsersService = AdminUsersService;
+], UsersService);
+exports.UsersService = UsersService;
 //# sourceMappingURL=users.service.js.map

@@ -7,13 +7,13 @@ import { UserEntity } from 'src/common/entities/user.entity';
 import { CustomException } from 'src/common/exceptions/customException';
 import { ValidationException } from 'src/common/exceptions/validationException';
 import { Connection, Equal, Not, Repository } from 'typeorm';
-import { AdminUserListDto } from '../dto/admin-user-list.dto';
-import { CreateAdminUserDto } from '../dto/create-user.dto';
-import { StatusChangeAdminUserDto } from '../dto/status-change-user.dto';
-import { UpdateAdminUserDto } from '../dto/update-user.dto';
+import { CreateUserDto } from '../dto/create-user.dto';
+import { StatusChangeUserDto } from '../dto/status-change-user.dto';
+import { UpdateUserDto } from '../dto/update-user.dto';
+import { UserFilterListDto } from '../dto/user-filter-list.dto';
 
 @Injectable()
-export class AdminUsersService {
+export class UsersService {
   constructor(
     @InjectRepository(UserEntity)
     private readonly userRepository: Repository<UserEntity>,
@@ -21,7 +21,7 @@ export class AdminUsersService {
   ) {}
 
   async findAll(
-    filter: AdminUserListDto,
+    filter: UserFilterListDto,
     pagination: PaginationDto,
   ): Promise<[UserEntity[], number]> {
     try {
@@ -59,12 +59,9 @@ export class AdminUsersService {
     }
   }
 
-  async create(
-    createAdminUserDto: CreateAdminUserDto,
-    adminUser: AdminUserDto,
-  ) {
+  async create(createUserDto: CreateUserDto, adminUser: AdminUserDto) {
     try {
-      const { name, phone, password, user_type } = createAdminUserDto;
+      const { name, phone, password, user_type } = createUserDto;
 
       //find Existing Entry
       const findExisting = await this.userRepository.findOne({ phone });
@@ -132,25 +129,25 @@ export class AdminUsersService {
 
   async update(
     id: string,
-    updateAdminUserDto: UpdateAdminUserDto,
+    updateUserDto: UpdateUserDto,
     adminUser: AdminUserDto,
   ) {
     try {
       // Find Data
       const whereCondition = {};
-      whereCondition['phone'] = Equal(updateAdminUserDto.phone);
+      whereCondition['phone'] = Equal(updateUserDto.phone);
       whereCondition['id'] = Not(Equal(id));
-      const udEexpectedData = await this.userRepository.findOne({
+      const unEexpectedData = await this.userRepository.findOne({
         where: { ...whereCondition },
       });
 
       // Data found throw an error.
-      if (udEexpectedData) {
+      if (unEexpectedData) {
         // throw an exception
         throw new ValidationException([
           {
             field: 'phone',
-            message: 'Phone Number Already  Exists with another User.',
+            message: 'Phone Number Already Exists with another User.',
           },
         ]);
       }
@@ -161,8 +158,8 @@ export class AdminUsersService {
           id: id,
         },
         {
-          name: updateAdminUserDto.name,
-          phone: updateAdminUserDto.phone,
+          name: updateUserDto.name,
+          phone: updateUserDto.phone,
           updated_by: adminUser.id,
         },
       );
@@ -179,7 +176,7 @@ export class AdminUsersService {
 
   async status(
     id: string,
-    statusChangeAdminUserDto: StatusChangeAdminUserDto,
+    statusChangeUserDto: StatusChangeUserDto,
     adminUser: AdminUserDto,
   ) {
     try {
@@ -197,7 +194,7 @@ export class AdminUsersService {
           id: id,
         },
         {
-          status: statusChangeAdminUserDto.status,
+          status: statusChangeUserDto.status,
           updated_by: adminUser.id,
         },
       );

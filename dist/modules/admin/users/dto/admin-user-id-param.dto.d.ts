@@ -1,3 +1,3 @@
-export declare class AdminUserIdParamDto {
+export declare class UserIdParamDto {
     id: string;
 }

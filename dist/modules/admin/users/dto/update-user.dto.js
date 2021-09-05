@@ -9,14 +9,14 @@ var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.UpdateAdminUserDto = void 0;
+exports.UpdateUserDto = void 0;
 const openapi = require("@nestjs/swagger");
 const swagger_1 = require("@nestjs/swagger");
 const class_validator_1 = require("class-validator");
 const user_type_enum_1 = require("./../../../../common/enums/admin/user-type.enum");
-class UpdateAdminUserDto {
+class UpdateUserDto {
     static _OPENAPI_METADATA_FACTORY() {
-        return { name: { required: true, type: () => String, minLength: 3, maxLength: 200 }, phone: { required: true, type: () => String, minLength: 10, maxLength: 200 }, user_type: { required: true, type: () => String } };
+        return { name: { required: true, type: () => String, minLength: 3, maxLength: 200 }, phone: { required: true, type: () => String, minLength: 10, maxLength: 200 }, email: { required: true, type: () => String, minLength: 10, maxLength: 200 }, user_type: { required: true, type: () => String } };
     }
 }
 __decorate([
@@ -29,7 +29,7 @@ __decorate([
     (0, class_validator_1.MinLength)(3),
     (0, class_validator_1.MaxLength)(200),
     __metadata("design:type", String)
-], UpdateAdminUserDto.prototype, "name", void 0);
+], UpdateUserDto.prototype, "name", void 0);
 __decorate([
     (0, swagger_1.ApiProperty)({
         type: String,
@@ -40,7 +40,19 @@ __decorate([
     (0, class_validator_1.MinLength)(10),
     (0, class_validator_1.MaxLength)(200),
     __metadata("design:type", String)
-], UpdateAdminUserDto.prototype, "phone", void 0);
+], UpdateUserDto.prototype, "phone", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({
+        type: String,
+        description: 'User Email',
+        default: 'email@gmail.com',
+    }),
+    (0, class_validator_1.MinLength)(10),
+    (0, class_validator_1.MaxLength)(200),
+    (0, class_validator_1.IsEmail)(),
+    (0, class_validator_1.IsNotEmpty)(),
+    __metadata("design:type", String)
+], UpdateUserDto.prototype, "email", void 0);
 __decorate([
     (0, swagger_1.ApiProperty)({
         type: String,
@@ -49,6 +61,6 @@ __decorate([
     }),
     (0, class_validator_1.IsEnum)(user_type_enum_1.UserTypeEnum, { message: 'User Type' }),
     __metadata("design:type", String)
-], UpdateAdminUserDto.prototype, "user_type", void 0);
-exports.UpdateAdminUserDto = UpdateAdminUserDto;
+], UpdateUserDto.prototype, "user_type", void 0);
+exports.UpdateUserDto = UpdateUserDto;
 //# sourceMappingURL=update-user.dto.js.map

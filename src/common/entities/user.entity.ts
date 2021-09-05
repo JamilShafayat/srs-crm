@@ -1,3 +1,4 @@
+import { IsEmail } from 'class-validator';
 import { Column, Entity, OneToMany, OneToOne } from 'typeorm';
 import { UserTypeEnum } from '../enums/admin/user-type.enum';
 import { ClientEntity } from './client.entity';
@@ -14,6 +15,7 @@ export class UserEntity extends CommonEntity {
   phone: string;
 
   @Column({ unique: true, nullable: false })
+  @IsEmail()
   email: string;
 
   @Column({ nullable: true })

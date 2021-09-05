@@ -1,8 +1,15 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsEnum, IsString, MaxLength, MinLength } from 'class-validator';
+import {
+  IsEmail,
+  IsEnum,
+  IsNotEmpty,
+  IsString,
+  MaxLength,
+  MinLength,
+} from 'class-validator';
 import { UserTypeEnum } from './../../../../common/enums/admin/user-type.enum';
 
-export class UpdateAdminUserDto {
+export class UpdateUserDto {
   @ApiProperty({
     type: String,
     description: 'User Full Name',
@@ -22,6 +29,17 @@ export class UpdateAdminUserDto {
   @MinLength(10)
   @MaxLength(200)
   phone: string;
+
+  @ApiProperty({
+    type: String,
+    description: 'User Email',
+    default: 'email@gmail.com',
+  })
+  @MinLength(10)
+  @MaxLength(200)
+  @IsEmail()
+  @IsNotEmpty()
+  email: string;
 
   @ApiProperty({
     type: String,
