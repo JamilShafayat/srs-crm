@@ -9,14 +9,14 @@ export class ProjectEntity extends CommonEntity {
   @Column({ unique: true, nullable: false })
   name: string;
 
-  @Column({ nullable: false })
+  @Column({ nullable: true })
   feature: string;
 
-  @Column({ type: Date, nullable: false })
-  initiate_date: Date;
+  @Column({ nullable: false })
+  initiate_date: string;
 
-  @Column({ type: Date, nullable: false })
-  completion_date: Date;
+  @Column({ nullable: true })
+  completion_date: string;
 
   @Column({ unique: false, nullable: false })
   team_id: string;

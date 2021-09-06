@@ -9,7 +9,7 @@ export class EmployeeEntity extends CommonEntity {
   @Column({ unique: true, nullable: false })
   full_name: string;
 
-  @Column({ nullable: false })
+  @Column({ nullable: true })
   expertise: string;
 
   @Column({ unique: true, nullable: false })

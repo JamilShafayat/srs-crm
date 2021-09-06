@@ -53,9 +53,9 @@ export class DesignationService {
     }
   }
 
-  async create(CreateDesignationDto: CreateDesignationDto, user: AdminUserDto) {
+  async create(createDesignationDto: CreateDesignationDto, user: AdminUserDto) {
     try {
-      const { name } = CreateDesignationDto;
+      const { name } = createDesignationDto;
 
       //find existing designation
       const findExisting = await this.designationRepository.findOne({ name });
