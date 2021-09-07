@@ -30,5 +30,5 @@ export class ComplaintEntity extends CommonEntity {
   project_info: ProjectEntity;
 
   @OneToMany(() => CommentEntity, (comment: any) => comment)
-  comment_info: CommentEntity;
+  comments: CommentEntity[];
 }

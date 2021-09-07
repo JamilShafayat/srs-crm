@@ -27,5 +27,5 @@ export class EmployeeEntity extends CommonEntity {
   designation_info: DesignationEntity;
 
   @OneToMany(() => TeamEmployeeEntity, (teamEmployee: any) => teamEmployee)
-  team_employee_info: TeamEmployeeEntity;
+  team_employees: TeamEmployeeEntity[];
 }
