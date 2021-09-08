@@ -8,5 +8,5 @@ export class DesignationEntity extends CommonEntity {
   name: string;
 
   @OneToMany(() => EmployeeEntity, (employee: any) => employee)
-  employee_info: EmployeeEntity;
+  employees: EmployeeEntity[];
 }

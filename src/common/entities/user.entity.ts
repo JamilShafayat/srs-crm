@@ -18,7 +18,7 @@ export class UserEntity extends CommonEntity {
   @IsEmail()
   email: string;
 
-  @Column({ nullable: true })
+  @Column({ unique: false, nullable: true })
   password: string;
 
   @Column({
@@ -32,7 +32,7 @@ export class UserEntity extends CommonEntity {
   client_info: ClientEntity;
 
   @OneToMany(() => CommentEntity, (comment) => comment)
-  comment_info: CommentEntity;
+  comments: CommentEntity[];
 
   @OneToOne(() => EmployeeEntity, (employee) => employee)
   employee_info: EmployeeEntity;

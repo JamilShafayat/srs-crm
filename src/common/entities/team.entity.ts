@@ -9,7 +9,7 @@ export class TeamEntity extends CommonEntity {
   name: string;
 
   @OneToMany(() => ProjectEntity, (project: any) => project)
-  project_info: ProjectEntity;
+  projects: ProjectEntity[];
 
   @OneToMany(() => TeamEmployeeEntity, (teamEmployee: any) => teamEmployee)
   team_employees: TeamEmployeeEntity[];

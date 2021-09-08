@@ -28,10 +28,10 @@ export class ProjectEntity extends CommonEntity {
   @Column({ unique: false, nullable: false })
   client_id: string;
 
-  @OneToOne(() => ClientEntity, (client: any) => client)
+  @OneToOne(() => ClientEntity, (client: any) => client.projects)
   @JoinColumn({ name: 'client_id' })
   client_info: ClientEntity;
 
   @OneToMany(() => ComplaintEntity, (complaint: any) => complaint)
-  complaint_info: ComplaintEntity;
+  complaints: ComplaintEntity[];
 }

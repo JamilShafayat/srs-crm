@@ -1,8 +1,10 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
+import * as bcrypt from 'bcrypt';
 import { AdminUserDto } from 'src/common/dto/admin-user.dto';
 import { PaginationDto } from 'src/common/dto/Pagination.dto';
 import { EmployeeEntity } from 'src/common/entities/employee.entity';
+import { UserEntity } from 'src/common/entities/user.entity';
 import { CustomException } from 'src/common/exceptions/customException';
 import { ValidationException } from 'src/common/exceptions/validationException';
 import { Connection, Equal, Repository } from 'typeorm';
@@ -16,6 +18,8 @@ export class EmployeeService {
   constructor(
     @InjectRepository(EmployeeEntity)
     private readonly employeeRepository: Repository<EmployeeEntity>,
+    @InjectRepository(UserEntity)
+    private readonly userRepository: Repository<UserEntity>,
     private connection: Connection,
   ) {}
 
@@ -30,11 +34,6 @@ export class EmployeeService {
       if (filter.status) {
         whereCondition['status'] = Equal(filter.status);
       }
-
-      //state filter
-      // if (filter.phone) {
-      //   whereCondition['phone'] = Equal(filter.phone);
-      // }
 
       //find users
       const employees = await this.employeeRepository.find({
@@ -61,28 +60,39 @@ export class EmployeeService {
 
   async create(createEmployeeDto: CreateEmployeeDto, user: AdminUserDto) {
     try {
-      const { full_name, expertise, user_id, designation_id } =
-        createEmployeeDto;
+      const { name, phone, email, password, user_type } = createEmployeeDto;
 
-      //find Existing Entry
-      const findExisting = await this.employeeRepository.findOne({ user_id });
+      //find existing user
+      const findUser = await this.userRepository.findOne({ phone });
 
-      // Entry if found
-      if (findExisting) {
-        // throw an exception
+      if (findUser) {
         throw new ValidationException([
           {
-            field: 'user_id',
+            field: 'phone',
             message: 'User Already Exists.',
           },
         ]);
       }
 
+      const hashedPassword = await bcrypt.hash(password, 12);
+      const newUser = {
+        name,
+        phone,
+        email,
+        user_type,
+        password: hashedPassword,
+        created_by: user.id,
+      };
+
+      const createUser = await this.userRepository.save(newUser);
+
+      const { full_name, expertise, designation_id } = createEmployeeDto;
+
       //Data store
       const data = {
         full_name,
         expertise,
-        user_id,
+        user_id: createUser.id,
         designation_id,
         created_by: user.id,
       };
@@ -142,19 +152,16 @@ export class EmployeeService {
         {
           full_name: updateEmployeeDto.full_name,
           expertise: updateEmployeeDto.expertise,
-          user_id: updateEmployeeDto.user_id,
           designation_id: updateEmployeeDto.designation_id,
           updated_by: user.id,
         },
       );
 
-      // Updated row getting
       const employee = await this.employeeRepository.findOne({
         where: { id },
         relations: ['user_info', 'designation_info'],
       });
 
-      //return updated row
       return employee;
     } catch (error) {
       throw new CustomException(error);

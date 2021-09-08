@@ -41,7 +41,10 @@ import { ClientService } from '../services/client.service';
 export class ClientController {
   constructor(private readonly clientService: ClientService) {}
 
-  // Fetch all clients
+  /*
+    Fetch all client
+    return array of objects
+  */
   @Get()
   @ApiResponse({ description: 'Get All Clients', status: HttpStatus.OK })
   async findAll(
@@ -54,7 +57,7 @@ export class ClientController {
     );
     return new PayloadResponseDTO({
       statusCode: HttpStatus.OK,
-      message: 'All Clients Fetched',
+      message: 'All Client Fetched',
       metadata: {
         page: pagination.page,
         totalCount: total,
@@ -64,7 +67,10 @@ export class ClientController {
     });
   }
 
-  // Insert client data
+  /*
+    Insert new client
+    return object
+  */
   @Post()
   @ApiResponse({ description: 'Client Create', status: HttpStatus.OK })
   @ApiBody({ type: CreateClientDto })
@@ -82,7 +88,10 @@ export class ClientController {
     });
   }
 
-  // Fetch only active clients
+  /*
+    Fetch all active client
+    return array of objects
+  */
   @Get('/list')
   @ApiResponse({
     description: 'Get Only Active clients',
@@ -97,7 +106,10 @@ export class ClientController {
     });
   }
 
-  // Fetch single client
+  /*
+    Fetch single client
+    return object
+  */
   @Get(':id')
   @ApiResponse({ description: 'Single Client Fetched', status: HttpStatus.OK })
   async findOne(@Param(new DtoValidationPipe()) params: ClientIdParamDto) {

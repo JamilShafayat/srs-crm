@@ -1,8 +1,10 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
+import * as bcrypt from 'bcrypt';
 import { AdminUserDto } from 'src/common/dto/admin-user.dto';
 import { PaginationDto } from 'src/common/dto/Pagination.dto';
 import { ClientEntity } from 'src/common/entities/client.entity';
+import { UserEntity } from 'src/common/entities/user.entity';
 import { CustomException } from 'src/common/exceptions/customException';
 import { ValidationException } from 'src/common/exceptions/validationException';
 import { Connection, Equal, Repository } from 'typeorm';
@@ -16,6 +18,8 @@ export class ClientService {
   constructor(
     @InjectRepository(ClientEntity)
     private readonly clientRepository: Repository<ClientEntity>,
+    @InjectRepository(UserEntity)
+    private readonly userRepository: Repository<UserEntity>,
     private connection: Connection,
   ) {}
 
@@ -31,12 +35,7 @@ export class ClientService {
         whereCondition['status'] = Equal(filter.status);
       }
 
-      //state filter
-      // if (filter.phone) {
-      //   whereCondition['phone'] = Equal(filter.phone);
-      // }
-
-      //find client
+      //find clients
       const clients = await this.clientRepository.find({
         where: {
           ...whereCondition,
@@ -52,7 +51,7 @@ export class ClientService {
         where: { ...whereCondition },
       });
 
-      // Return Fetched Data
+      // return fetched client
       return [clients, total];
     } catch (error) {
       throw new CustomException(error);
@@ -61,34 +60,44 @@ export class ClientService {
 
   async create(createClientDto: CreateClientDto, user: AdminUserDto) {
     try {
-      const { full_name, address, user_id } = createClientDto;
+      const { name, phone, email, password, user_type } = createClientDto;
 
-      //find Existing Entry
-      const findExisting = await this.clientRepository.findOne({ user_id });
+      //find existing user
+      const findUser = await this.userRepository.findOne({ phone });
 
-      // Entry if found
-      if (findExisting) {
-        // throw an exception
+      if (findUser) {
         throw new ValidationException([
           {
-            field: 'user_id',
+            field: 'phone',
             message: 'User Already Exists.',
           },
         ]);
       }
 
-      //Data store
-      const data = {
-        full_name,
-        address,
-        user_id,
+      const hashedPassword = await bcrypt.hash(password, 12);
+      const newUser = {
+        name,
+        phone,
+        email,
+        user_type,
+        password: hashedPassword,
         created_by: user.id,
       };
 
-      const addedClientData = await this.clientRepository.save(data);
+      const createUser = await this.userRepository.save(newUser);
 
-      // Created Data Return
-      return addedClientData;
+      const { full_name, address } = createClientDto;
+
+      const newClient = {
+        full_name,
+        address,
+        user_id: createUser.id,
+        created_by: user.id,
+      };
+
+      const createClient = await this.clientRepository.save(newClient);
+
+      return createClient;
     } catch (error) {
       throw new CustomException(error);
     }
@@ -96,13 +105,12 @@ export class ClientService {
 
   async findAllList() {
     try {
-      // All Active Data Fetch
-      const expectedData = await this.clientRepository.findAndCount({
+      // find all active clients
+      const findClient = await this.clientRepository.findAndCount({
         status: 1,
       });
 
-      // Return Fetched Data
-      return expectedData;
+      return findClient;
     } catch (error) {
       throw new CustomException(error);
     }
@@ -111,16 +119,16 @@ export class ClientService {
   async findOne(id: string): Promise<ClientEntity> {
     try {
       // Single client fetch
-      const expectedData = await this.clientRepository.findOne({
+      const findClient = await this.clientRepository.findOne({
         where: { id },
         relations: ['user_info'],
       });
 
       // User not found throw an error.
-      if (!expectedData) {
+      if (!findClient) {
         throw new NotFoundException('No Client Found!');
       }
-      return expectedData;
+      return findClient;
     } catch (error) {
       throw new CustomException(error);
     }
@@ -132,7 +140,6 @@ export class ClientService {
     user: AdminUserDto,
   ) {
     try {
-      //update data
       await this.clientRepository.update(
         {
           id: id,
@@ -140,18 +147,15 @@ export class ClientService {
         {
           full_name: updateClientDto.full_name,
           address: updateClientDto.address,
-          user_id: updateClientDto.user_id,
           updated_by: user.id,
         },
       );
 
-      // Updated row getting
       const client = await this.clientRepository.findOne({
         where: { id },
         relations: ['user_info'],
       });
 
-      //return updated row
       return client;
     } catch (error) {
       throw new CustomException(error);
@@ -164,15 +168,14 @@ export class ClientService {
     user: AdminUserDto,
   ) {
     try {
-      // Find user
-      const expectedData = await this.clientRepository.findOne(id);
+      // search client
+      const findUser = await this.clientRepository.findOne(id);
 
       // client not found throw an error.
-      if (!expectedData) {
+      if (!findUser) {
         throw new NotFoundException('No Client Found!');
       }
 
-      //update client status
       await this.clientRepository.update(
         {
           id: id,
@@ -183,10 +186,8 @@ export class ClientService {
         },
       );
 
-      // Updated user fetch
       const client = await this.clientRepository.findOne(id);
 
-      //return updated client
       return client;
     } catch (error) {
       throw new CustomException(error);
@@ -195,16 +196,16 @@ export class ClientService {
 
   async remove(id: string, user: AdminUserDto) {
     try {
-      // Find client
-      const expectedData = await this.clientRepository.findOne({ id: id });
+      // find client
+      const findClient = await this.clientRepository.findOne({ id: id });
 
-      // Client not found throw an error.
-      if (!expectedData) {
+      // client not found throw an error.
+      if (!findClient) {
         throw new NotFoundException('No Client Found!');
       }
 
       await this.connection.transaction(async (manager) => {
-        //Update Deleted By
+        // update deleted by
         await manager.getRepository<ClientEntity>('clients').update(
           {
             id: id,
@@ -214,7 +215,7 @@ export class ClientService {
           },
         );
 
-        //Soft delete client
+        //soft delete client
         await manager.getRepository<ClientEntity>('clients').softDelete(id);
         return true;
       });
@@ -226,13 +227,13 @@ export class ClientService {
   async finalDelete(id: string) {
     try {
       // Find client
-      const expectedData = await this.clientRepository.find({
+      const findClient = await this.clientRepository.find({
         where: { id },
         withDeleted: true,
       });
 
       // Data not found throw an error.
-      if (!expectedData) {
+      if (!findClient) {
         throw new NotFoundException('No Client Found!');
       }
 

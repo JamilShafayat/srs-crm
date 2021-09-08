@@ -18,7 +18,7 @@ export class ComplaintEntity extends CommonEntity {
   @Column({ unique: false, nullable: false })
   client_id: string;
 
-  @OneToOne(() => ClientEntity, (client: any) => client)
+  @OneToOne(() => ClientEntity, (client: any) => client.complaints)
   @JoinColumn({ name: 'client_id' })
   client_info: ClientEntity;
 

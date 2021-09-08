@@ -20,8 +20,8 @@ export class ClientEntity extends CommonEntity {
   user_info: UserEntity;
 
   @OneToMany(() => ComplaintEntity, (complaint: any) => complaint)
-  complaint_info: ComplaintEntity;
+  complaints: ComplaintEntity[];
 
   @OneToMany(() => ProjectEntity, (project: any) => project)
-  project_info: ProjectEntity;
+  projects: ProjectEntity[];
 }

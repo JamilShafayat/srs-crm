@@ -72,7 +72,7 @@ export class UsersService {
         throw new ValidationException([
           {
             field: 'phone',
-            message: 'User Already  Exists.',
+            message: 'User Already Exists.',
           },
         ]);
       }

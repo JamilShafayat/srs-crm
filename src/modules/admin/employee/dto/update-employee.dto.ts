@@ -24,17 +24,8 @@ export class UpdateEmployeeDto {
 
   @ApiProperty({
     type: String,
-    description: 'User Id',
-    default: 'ee4e9927-e59a-4ce1-9379-1380db160a37',
-  })
-  @IsString()
-  @IsNotEmpty()
-  user_id: string;
-
-  @ApiProperty({
-    type: String,
     description: 'Designation Id',
-    default: '6e05b867-03d5-4efc-9d87-8eb0dca2090a',
+    default: 'f2e82a21-09fa-4cce-858b-27b208ec119c',
   })
   @IsString()
   @IsNotEmpty()
