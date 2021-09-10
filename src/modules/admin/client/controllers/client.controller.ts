@@ -23,6 +23,7 @@ import { Pagination } from 'src/common/decorators/pagination.decorator';
 import { AdminUserDto } from 'src/common/dto/admin-user.dto';
 import { PaginationDto } from 'src/common/dto/Pagination.dto';
 import { PayloadResponseDTO } from 'src/common/dto/payload-response.dto';
+import { CustomException } from 'src/common/exceptions/customException';
 import { AuthGuard } from 'src/common/guard/admin/auth.guard';
 import { DtoValidationPipe } from 'src/common/pipes/dtoValidation.pipe';
 import { EntityManager, TransactionManager } from 'typeorm';
@@ -42,8 +43,8 @@ export class ClientController {
   constructor(private readonly clientService: ClientService) {}
 
   /*
-    Fetch all client
-    return array of objects
+    fetch all client
+    return an array of objects
   */
   @Get()
   @ApiResponse({ description: 'Get All Clients', status: HttpStatus.OK })
@@ -51,46 +52,56 @@ export class ClientController {
     @Query() filter: ClientFilterListDto,
     @Pagination() pagination: PaginationDto,
   ) {
-    const [clients, total] = await this.clientService.findAll(
-      filter,
-      pagination,
-    );
-    return new PayloadResponseDTO({
-      statusCode: HttpStatus.OK,
-      message: 'All Client Fetched',
-      metadata: {
-        page: pagination.page,
-        totalCount: total,
-        limit: pagination.limit,
-      },
-      data: { clients },
-    });
+    try {
+      const [clients, total] = await this.clientService.findAll(
+        filter,
+        pagination,
+      );
+
+      return new PayloadResponseDTO({
+        statusCode: HttpStatus.OK,
+        message: 'All clients fetched Successfully',
+        metadata: {
+          page: pagination.page,
+          totalCount: total,
+          limit: pagination.limit,
+        },
+        data: { clients },
+      });
+    } catch (error) {
+      throw new CustomException(error);
+    }
   }
 
   /*
-    Insert new client
-    return object
+    create new client
+    return single object
   */
   @Post()
-  @ApiResponse({ description: 'Client Create', status: HttpStatus.OK })
+  @ApiResponse({ description: 'Create New Client', status: HttpStatus.CREATED })
   @ApiBody({ type: CreateClientDto })
   async create(
     @AdminUser() user: AdminUserDto,
     @Body(new DtoValidationPipe())
     createClientDto: CreateClientDto,
-    @TransactionManager() manager: EntityManager, //if needed transaction use @TransactionManager
+    @TransactionManager() manager: EntityManager,
   ) {
-    const client = await this.clientService.create(createClientDto, user);
-    return new PayloadResponseDTO({
-      statusCode: HttpStatus.OK,
-      message: 'Client Entry Successful',
-      data: { client },
-    });
+    try {
+      const client = await this.clientService.create(createClientDto, user);
+
+      return new PayloadResponseDTO({
+        statusCode: HttpStatus.CREATED,
+        message: 'Client created successfully',
+        data: { client },
+      });
+    } catch (error) {
+      throw new CustomException(error);
+    }
   }
 
   /*
-    Fetch all active client
-    return array of objects
+    fetch all active clients
+    return an array of objects
   */
   @Get('/list')
   @ApiResponse({
@@ -98,30 +109,41 @@ export class ClientController {
     status: HttpStatus.OK,
   })
   async findAllList() {
-    const [clients] = await this.clientService.findAllList();
-    return new PayloadResponseDTO({
-      statusCode: HttpStatus.OK,
-      message: 'All Active Client Fetched',
-      data: { clients },
-    });
+    try {
+      const [clients] = await this.clientService.findAllList();
+      return new PayloadResponseDTO({
+        statusCode: HttpStatus.OK,
+        message: 'All active clients fetched successfully',
+        data: { clients },
+      });
+    } catch (error) {
+      throw new CustomException(error);
+    }
   }
 
   /*
-    Fetch single client
-    return object
+    fetch single client
+    return single object
   */
   @Get(':id')
   @ApiResponse({ description: 'Single Client Fetched', status: HttpStatus.OK })
   async findOne(@Param(new DtoValidationPipe()) params: ClientIdParamDto) {
-    const client = await this.clientService.findOne(params.id);
-    return new PayloadResponseDTO({
-      statusCode: HttpStatus.OK,
-      message: 'Single Client Fetched',
-      data: { client },
-    });
+    try {
+      const client = await this.clientService.findOne(params.id);
+      return new PayloadResponseDTO({
+        statusCode: HttpStatus.OK,
+        message: 'Single client fetched successfully',
+        data: { client },
+      });
+    } catch (error) {
+      throw new CustomException(error);
+    }
   }
 
-  // Update client data
+  /*
+    update single client
+    return single object
+  */
   @Put(':id')
   @ApiResponse({ description: 'Single Client Updated', status: HttpStatus.OK })
   async update(
@@ -129,19 +151,26 @@ export class ClientController {
     @Param(new DtoValidationPipe()) params: ClientIdParamDto,
     @Body(new DtoValidationPipe()) updateClientDto: UpdateClientDto,
   ) {
-    const client = await this.clientService.update(
-      params.id,
-      updateClientDto,
-      user,
-    );
-    return new PayloadResponseDTO({
-      statusCode: HttpStatus.OK,
-      message: 'Client Updated Successfully',
-      data: { client },
-    });
+    try {
+      const client = await this.clientService.update(
+        params.id,
+        updateClientDto,
+        user,
+      );
+      return new PayloadResponseDTO({
+        statusCode: HttpStatus.OK,
+        message: 'Client updated successfully',
+        data: { client },
+      });
+    } catch (error) {
+      throw new CustomException(error);
+    }
   }
 
-  // Update client status
+  /*
+    update client status
+    return single object
+  */
   @Patch(':id/status')
   @ApiResponse({
     description: 'Single Client Status Changed',
@@ -153,41 +182,63 @@ export class ClientController {
     @Body(new DtoValidationPipe())
     statusChangeClientDto: StatusChangeClientDto,
   ) {
-    const client = await this.clientService.status(
-      params.id,
-      statusChangeClientDto,
-      user,
-    );
-    return new PayloadResponseDTO({
-      statusCode: HttpStatus.OK,
-      message: 'Client Updated',
-      data: { client },
-    });
+    try {
+      const client = await this.clientService.status(
+        params.id,
+        statusChangeClientDto,
+        user,
+      );
+      return new PayloadResponseDTO({
+        statusCode: HttpStatus.OK,
+        message: 'Client status updated successfully',
+        data: { client },
+      });
+    } catch (error) {
+      throw new CustomException(error);
+    }
   }
 
-  // Soft delete single client
+  /*
+    delete single client - soft delete
+    return null
+  */
   @Delete(':id')
   @ApiResponse({ description: 'Single Client Deleted', status: HttpStatus.OK })
   async remove(
     @AdminUser() user: AdminUserDto,
     @Param(new DtoValidationPipe()) params: ClientIdParamDto,
   ) {
-    await this.clientService.remove(params.id, user);
-    return new PayloadResponseDTO({
-      statusCode: HttpStatus.OK,
-      message: 'Client Soft Deleted',
-      data: {},
-    });
+    try {
+      await this.clientService.remove(params.id, user);
+      return new PayloadResponseDTO({
+        statusCode: HttpStatus.OK,
+        message: 'Client soft deleted',
+        data: {},
+      });
+    } catch (error) {
+      throw new CustomException(error);
+    }
   }
 
-  // Hard delete single client
+  /*
+    delete single client - hard/permanent delete
+    return null
+  */
   @Delete('/:id/delete')
+  @ApiResponse({
+    description: 'Single Client Deleted Permanently',
+    status: HttpStatus.OK,
+  })
   async finalDelete(@Param(new DtoValidationPipe()) params: ClientIdParamDto) {
-    await this.clientService.finalDelete(params.id);
-    return new PayloadResponseDTO({
-      statusCode: HttpStatus.OK,
-      message: 'Client Completely Deleted',
-      data: {},
-    });
+    try {
+      await this.clientService.finalDelete(params.id);
+      return new PayloadResponseDTO({
+        statusCode: HttpStatus.OK,
+        message: 'Client completely deleted',
+        data: {},
+      });
+    } catch (error) {
+      throw new CustomException(error);
+    }
   }
 }

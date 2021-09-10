@@ -6,7 +6,7 @@ import { UserEntity } from './user.entity';
 
 @Entity('clients')
 export class ClientEntity extends CommonEntity {
-  @Column({ nullable: false })
+  @Column({ unique: true, nullable: false })
   full_name: string;
 
   @Column({ nullable: true })

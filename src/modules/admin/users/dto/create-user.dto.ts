@@ -50,7 +50,7 @@ export class CreateUserDto {
   @ApiProperty({
     type: String,
     description: 'User Type',
-    default: UserTypeEnum.SUPER_ADMIN,
+    default: UserTypeEnum.GENERAL_EMPLOYEE,
   })
   @IsEnum(UserTypeEnum, { message: 'User Type' })
   user_type: string;
