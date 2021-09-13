@@ -43,11 +43,11 @@ export class ClientController {
   constructor(private readonly clientService: ClientService) {}
 
   /*
-    fetch all client
+    fetch all clients
     return an array of objects
   */
   @Get()
-  @ApiResponse({ description: 'Get All Clients', status: HttpStatus.OK })
+  @ApiResponse({ description: 'Get all clients', status: HttpStatus.OK })
   async findAll(
     @Query() filter: ClientFilterListDto,
     @Pagination() pagination: PaginationDto,
@@ -78,12 +78,13 @@ export class ClientController {
     return single object
   */
   @Post()
-  @ApiResponse({ description: 'Create New Client', status: HttpStatus.CREATED })
+  @ApiResponse({ description: 'Create new client', status: HttpStatus.CREATED })
   @ApiBody({ type: CreateClientDto })
   async create(
     @AdminUser() user: AdminUserDto,
     @Body(new DtoValidationPipe())
     createClientDto: CreateClientDto,
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     @TransactionManager() manager: EntityManager,
   ) {
     try {
@@ -105,7 +106,7 @@ export class ClientController {
   */
   @Get('/list')
   @ApiResponse({
-    description: 'Get Only Active clients',
+    description: 'Get only active clients',
     status: HttpStatus.OK,
   })
   async findAllList() {
@@ -126,7 +127,7 @@ export class ClientController {
     return single object
   */
   @Get(':id')
-  @ApiResponse({ description: 'Single Client Fetched', status: HttpStatus.OK })
+  @ApiResponse({ description: 'Single client fetched', status: HttpStatus.OK })
   async findOne(@Param(new DtoValidationPipe()) params: ClientIdParamDto) {
     try {
       const client = await this.clientService.findOne(params.id);
@@ -145,7 +146,7 @@ export class ClientController {
     return single object
   */
   @Put(':id')
-  @ApiResponse({ description: 'Single Client Updated', status: HttpStatus.OK })
+  @ApiResponse({ description: 'Single client updated', status: HttpStatus.OK })
   async update(
     @AdminUser() user: AdminUserDto,
     @Param(new DtoValidationPipe()) params: ClientIdParamDto,
@@ -173,7 +174,7 @@ export class ClientController {
   */
   @Patch(':id/status')
   @ApiResponse({
-    description: 'Single Client Status Changed',
+    description: 'Single client status changed',
     status: HttpStatus.OK,
   })
   async status(
@@ -203,7 +204,7 @@ export class ClientController {
     return null
   */
   @Delete(':id')
-  @ApiResponse({ description: 'Single Client Deleted', status: HttpStatus.OK })
+  @ApiResponse({ description: 'Single client deleted', status: HttpStatus.OK })
   async remove(
     @AdminUser() user: AdminUserDto,
     @Param(new DtoValidationPipe()) params: ClientIdParamDto,
@@ -226,7 +227,7 @@ export class ClientController {
   */
   @Delete('/:id/delete')
   @ApiResponse({
-    description: 'Single Client Deleted Permanently',
+    description: 'Single client deleted permanently',
     status: HttpStatus.OK,
   })
   async finalDelete(@Param(new DtoValidationPipe()) params: ClientIdParamDto) {

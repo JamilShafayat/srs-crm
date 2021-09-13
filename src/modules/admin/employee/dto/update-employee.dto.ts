@@ -4,7 +4,7 @@ import { IsNotEmpty, IsString, MaxLength, MinLength } from 'class-validator';
 export class UpdateEmployeeDto {
   @ApiProperty({
     type: String,
-    description: 'Employee Full Name',
+    description: 'Employee full name',
     default: 'Mr. Employee',
   })
   @IsString()
@@ -24,7 +24,7 @@ export class UpdateEmployeeDto {
 
   @ApiProperty({
     type: String,
-    description: 'Designation Id',
+    description: 'Designation id',
     default: 'f2e82a21-09fa-4cce-858b-27b208ec119c',
   })
   @IsString()

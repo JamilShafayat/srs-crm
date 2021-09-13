@@ -5,8 +5,8 @@ import { CreateUserDto } from '../../users/dto/create-user.dto';
 export class CreateClientDto extends CreateUserDto {
   @ApiProperty({
     type: String,
-    description: 'Client Name',
-    default: 'Mr. Name',
+    description: 'Client name',
+    default: 'Mr. Client',
   })
   @IsString()
   @MinLength(3)
@@ -15,7 +15,7 @@ export class CreateClientDto extends CreateUserDto {
 
   @ApiProperty({
     type: String,
-    description: 'Client Address',
+    description: 'Client address',
     default: 'Bangladesh',
   })
   @IsString()

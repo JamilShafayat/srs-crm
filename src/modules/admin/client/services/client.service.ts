@@ -73,7 +73,7 @@ export class ClientService {
           {
             field: checkUserName ? 'name' : 'phone',
             message:
-              'This user name or phone number already exists in the system.',
+              'This user name or phone number is already exists in the system.',
           },
         ]);
       }
@@ -83,7 +83,7 @@ export class ClientService {
         throw new ValidationException([
           {
             field: 'full_name',
-            message: 'This client full name already exists in the system.',
+            message: 'This client full name is already exists in the system.',
           },
         ]);
       }
@@ -232,7 +232,6 @@ export class ClientService {
           },
         );
 
-        //soft delete client
         await manager.getRepository<ClientEntity>('clients').softDelete(id);
 
         return true;

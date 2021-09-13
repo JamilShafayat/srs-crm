@@ -35,7 +35,7 @@ export class EmployeeService {
         whereCondition['status'] = Equal(filter.status);
       }
 
-      //find users
+      //find employees
       const employees = await this.employeeRepository.find({
         where: {
           ...whereCondition,
@@ -46,12 +46,10 @@ export class EmployeeService {
         relations: ['user_info', 'designation_info'],
       });
 
-      //count total employee
       const total = await this.employeeRepository.count({
         where: { ...whereCondition },
       });
 
-      // Return Fetched Data
       return [employees, total];
     } catch (error) {
       throw new CustomException(error);
@@ -60,16 +58,40 @@ export class EmployeeService {
 
   async create(createEmployeeDto: CreateEmployeeDto, user: AdminUserDto) {
     try {
-      const { name, phone, email, password, user_type } = createEmployeeDto;
+      const {
+        name,
+        phone,
+        email,
+        password,
+        user_type,
+        full_name,
+        expertise,
+        designation_id,
+      } = createEmployeeDto;
+
+      const checkUserName = await this.userRepository.findOne({ name });
+      const checkUserPhoneNumber = await this.userRepository.findOne({ phone });
+      const checkEmployeeFullName = await this.employeeRepository.findOne({
+        full_name,
+      });
 
       //find existing user
-      const findUser = await this.userRepository.findOne({ phone });
-
-      if (findUser) {
+      if (checkUserName || checkUserPhoneNumber) {
         throw new ValidationException([
           {
-            field: 'phone',
-            message: 'User Already Exists.',
+            field: checkUserName ? 'name' : 'phone',
+            message:
+              'This user name or phone number is already exists in the system.',
+          },
+        ]);
+      }
+
+      //find existing employee
+      if (checkEmployeeFullName) {
+        throw new ValidationException([
+          {
+            field: 'full_name',
+            message: 'This employee full name is already exists in the system.',
           },
         ]);
       }
@@ -86,10 +108,7 @@ export class EmployeeService {
 
       const createUser = await this.userRepository.save(newUser);
 
-      const { full_name, expertise, designation_id } = createEmployeeDto;
-
-      //Data store
-      const data = {
+      const newEmployee = {
         full_name,
         expertise,
         user_id: createUser.id,
@@ -97,10 +116,14 @@ export class EmployeeService {
         created_by: user.id,
       };
 
-      const addedEmployeeData = await this.employeeRepository.save(data);
+      const createEmployee = await this.employeeRepository.save(newEmployee);
 
-      // Created Data Return
-      return addedEmployeeData;
+      const employee = await this.employeeRepository.findOne({
+        where: { id: createEmployee.id },
+        relations: ['user_info', 'designation_info'],
+      });
+
+      return employee;
     } catch (error) {
       throw new CustomException(error);
     }
@@ -108,13 +131,12 @@ export class EmployeeService {
 
   async findAllList() {
     try {
-      // All Active Data Fetch
-      const expectedData = await this.employeeRepository.findAndCount({
+      // find all active employees
+      const employees = await this.employeeRepository.findAndCount({
         status: 1,
       });
 
-      // Return Fetched Data
-      return expectedData;
+      return employees;
     } catch (error) {
       throw new CustomException(error);
     }
@@ -122,17 +144,15 @@ export class EmployeeService {
 
   async findOne(id: string): Promise<EmployeeEntity> {
     try {
-      // Single employee fetch
-      const expectedData = await this.employeeRepository.findOne({
+      const employee = await this.employeeRepository.findOne({
         where: { id },
         relations: ['user_info', 'designation_info'],
       });
 
-      // employee not found throw an error.
-      if (!expectedData) {
-        throw new NotFoundException('No Employee Found!');
+      if (!employee) {
+        throw new NotFoundException('No employee found on this id!');
       }
-      return expectedData;
+      return employee;
     } catch (error) {
       throw new CustomException(error);
     }
@@ -144,7 +164,6 @@ export class EmployeeService {
     user: AdminUserDto,
   ) {
     try {
-      //update data
       await this.employeeRepository.update(
         {
           id: id,
@@ -174,15 +193,13 @@ export class EmployeeService {
     user: AdminUserDto,
   ) {
     try {
-      // Find employee
-      const expectedData = await this.employeeRepository.findOne(id);
+      // find employee
+      const findEmployee = await this.employeeRepository.findOne(id);
 
-      // employee not found throw an error.
-      if (!expectedData) {
-        throw new NotFoundException('No Employee Found!');
+      if (!findEmployee) {
+        throw new NotFoundException('No employee found on this id!');
       }
 
-      //update employee status
       await this.employeeRepository.update(
         {
           id: id,
@@ -193,10 +210,8 @@ export class EmployeeService {
         },
       );
 
-      // Updated employee fetch
       const employee = await this.employeeRepository.findOne(id);
 
-      //return updated employee
       return employee;
     } catch (error) {
       throw new CustomException(error);
@@ -205,16 +220,14 @@ export class EmployeeService {
 
   async remove(id: string, user: AdminUserDto) {
     try {
-      // Find employee
-      const expectedData = await this.employeeRepository.findOne({ id: id });
+      // find employee
+      const employee = await this.employeeRepository.findOne({ id: id });
 
-      // employee not found throw an error.
-      if (!expectedData) {
-        throw new NotFoundException('No Employee Found!');
+      if (!employee) {
+        throw new NotFoundException('No employee found on this id!');
       }
 
       await this.connection.transaction(async (manager) => {
-        //Update Deleted By
         await manager.getRepository<EmployeeEntity>('employees').update(
           {
             id: id,
@@ -224,7 +237,6 @@ export class EmployeeService {
           },
         );
 
-        //Soft delete employee
         await manager.getRepository<EmployeeEntity>('employees').softDelete(id);
         return true;
       });
@@ -235,21 +247,18 @@ export class EmployeeService {
 
   async finalDelete(id: string) {
     try {
-      // Find employee
-      const expectedData = await this.employeeRepository.find({
+      // find employee
+      const employee = await this.employeeRepository.find({
         where: { id },
         withDeleted: true,
       });
 
-      // Data not found throw an error.
-      if (!expectedData) {
-        throw new NotFoundException('No Employee Found!');
+      if (!employee) {
+        throw new NotFoundException('No employee found on this id!');
       }
 
-      //Delete data
       await this.employeeRepository.delete(id);
 
-      //Return
       return true;
     } catch (error) {
       throw new CustomException(error);

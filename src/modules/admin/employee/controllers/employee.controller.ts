@@ -41,9 +41,12 @@ import { EmployeeService } from '../services/employee.service';
 export class EmployeeController {
   constructor(private readonly employeeService: EmployeeService) {}
 
-  // Fetch all employee
+  /*
+    fetch all employees
+    return an array of objects
+  */
   @Get()
-  @ApiResponse({ description: 'Get All Employees', status: HttpStatus.OK })
+  @ApiResponse({ description: 'Get all employees', status: HttpStatus.OK })
   async findAll(
     @Query() filter: EmployeeFilterListDto,
     @Pagination() pagination: PaginationDto,
@@ -54,7 +57,7 @@ export class EmployeeController {
     );
     return new PayloadResponseDTO({
       statusCode: HttpStatus.OK,
-      message: 'All Employee Fetched',
+      message: 'All employee fetched Successfully',
       metadata: {
         page: pagination.page,
         totalCount: total,
@@ -64,58 +67,74 @@ export class EmployeeController {
     });
   }
 
-  // Insert employee data
+  /*
+    create new employee
+    return single object
+  */
   @Post()
-  @ApiResponse({ description: 'Employee Create', status: HttpStatus.OK })
+  @ApiResponse({
+    description: 'Create new employee',
+    status: HttpStatus.CREATED,
+  })
   @ApiBody({ type: CreateEmployeeDto })
   async create(
     @AdminUser() user: AdminUserDto,
     @Body(new DtoValidationPipe())
     createEmployeeDto: CreateEmployeeDto,
-    @TransactionManager() manager: EntityManager, //if needed transaction use @TransactionManager
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    @TransactionManager() manager: EntityManager,
   ) {
     const employee = await this.employeeService.create(createEmployeeDto, user);
     return new PayloadResponseDTO({
-      statusCode: HttpStatus.OK,
-      message: 'Employee Created Successfully',
+      statusCode: HttpStatus.CREATED,
+      message: 'Employee created successfully',
       data: { employee },
     });
   }
 
-  // Fetch only active employee
+  /*
+    fetch all active employees
+    return an array of objects
+  */
   @Get('/list')
   @ApiResponse({
-    description: 'Get Only Active Employee',
+    description: 'Get only active employees',
     status: HttpStatus.OK,
   })
   async findAllList() {
     const [employees] = await this.employeeService.findAllList();
     return new PayloadResponseDTO({
       statusCode: HttpStatus.OK,
-      message: 'All Active Employee Fetched',
+      message: 'All active employee fetched successfully',
       data: { employees },
     });
   }
 
-  // Fetch single employee
+  /*
+    fetch single employee
+    return single object
+  */
   @Get(':id')
   @ApiResponse({
-    description: 'Single Employee Fetched',
+    description: 'Single employee fetched',
     status: HttpStatus.OK,
   })
   async findOne(@Param(new DtoValidationPipe()) params: EmployeeIdParamDto) {
     const employee = await this.employeeService.findOne(params.id);
     return new PayloadResponseDTO({
       statusCode: HttpStatus.OK,
-      message: 'Single Employee Fetched',
+      message: 'Single employee fetched successfully',
       data: { employee },
     });
   }
 
-  // Update employee data
+  /*
+    update single employee
+    return single object
+  */
   @Put(':id')
   @ApiResponse({
-    description: 'Single Employee Updated',
+    description: 'Single employee updated',
     status: HttpStatus.OK,
   })
   async update(
@@ -130,15 +149,18 @@ export class EmployeeController {
     );
     return new PayloadResponseDTO({
       statusCode: HttpStatus.OK,
-      message: 'Employee Updated Successfully',
+      message: 'Employee updated successfully',
       data: { employee },
     });
   }
 
-  // Update employee status
+  /*
+    update employee status
+    return single object
+  */
   @Patch(':id/status')
   @ApiResponse({
-    description: 'Single Employee Status Changed',
+    description: 'Single employee status changed',
     status: HttpStatus.OK,
   })
   async status(
@@ -154,15 +176,18 @@ export class EmployeeController {
     );
     return new PayloadResponseDTO({
       statusCode: HttpStatus.OK,
-      message: 'Employee Status Updated Successfully',
+      message: 'Employee status updated successfully',
       data: { employee },
     });
   }
 
-  // Soft delete single employee
+  /*
+    delete single employee - soft delete
+    return null
+  */
   @Delete(':id')
   @ApiResponse({
-    description: 'Single Employee Deleted',
+    description: 'Single employee deleted',
     status: HttpStatus.OK,
   })
   async remove(
@@ -172,20 +197,27 @@ export class EmployeeController {
     await this.employeeService.remove(params.id, user);
     return new PayloadResponseDTO({
       statusCode: HttpStatus.OK,
-      message: 'Employee Soft Deleted',
+      message: 'Employee soft deleted',
       data: {},
     });
   }
 
-  // Hard delete single employee
+  /*
+    delete single employee - hard/permanent delete
+    return null
+  */
   @Delete('/:id/delete')
+  @ApiResponse({
+    description: 'Single employee deleted permanently',
+    status: HttpStatus.OK,
+  })
   async finalDelete(
     @Param(new DtoValidationPipe()) params: EmployeeIdParamDto,
   ) {
     await this.employeeService.finalDelete(params.id);
     return new PayloadResponseDTO({
       statusCode: HttpStatus.OK,
-      message: 'Employee Completely Deleted',
+      message: 'Employee completely deleted',
       data: {},
     });
   }

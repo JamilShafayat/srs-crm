@@ -4,8 +4,8 @@ import { IsString, MaxLength, MinLength } from 'class-validator';
 export class UpdateClientDto {
   @ApiProperty({
     type: String,
-    description: 'Client Name',
-    default: 'Mr. Name',
+    description: 'Client name',
+    default: 'Mr. Client',
   })
   @IsString()
   @MinLength(3)
@@ -14,7 +14,7 @@ export class UpdateClientDto {
 
   @ApiProperty({
     type: String,
-    description: 'Client Address',
+    description: 'Client address',
     default: 'Bangladesh',
   })
   @IsString()
