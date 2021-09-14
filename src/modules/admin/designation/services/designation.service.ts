@@ -41,12 +41,10 @@ export class DesignationService {
         take: pagination.limit,
       });
 
-      //count total categories
       const total = await this.designationRepository.count({
         where: { ...whereCondition },
       });
 
-      // Return Fetched Data
       return [designations, total];
     } catch (error) {
       throw new CustomException(error);
@@ -58,29 +56,30 @@ export class DesignationService {
       const { name } = createDesignationDto;
 
       //find existing designation
-      const findExisting = await this.designationRepository.findOne({ name });
+      const findDesignation = await this.designationRepository.findOne({
+        name,
+      });
 
       // If found designation
-      if (findExisting) {
-        // throw an exception
+      if (findDesignation) {
         throw new ValidationException([
           {
             field: 'name',
-            message: 'This Designation Name Already Exists.',
+            message: 'This designation name already exists in the system.',
           },
         ]);
       }
 
-      const data = {
+      const createDesignation = {
         name,
         created_by: user.id,
       };
 
-      // Designation store
-      const addedDesignationData = await this.designationRepository.save(data);
+      const designation = await this.designationRepository.save(
+        createDesignation,
+      );
 
-      // Created Data Return
-      return addedDesignationData;
+      return designation;
     } catch (error) {
       throw new CustomException(error);
     }
@@ -88,13 +87,12 @@ export class DesignationService {
 
   async findAllList() {
     try {
-      // All Active Data Fetch
-      const expectedData = await this.designationRepository.findAndCount({
+      // find all active designations
+      const designations = await this.designationRepository.findAndCount({
         status: 1,
       });
 
-      // Return Fetched Data
-      return expectedData;
+      return designations;
     } catch (error) {
       throw new CustomException(error);
     }
@@ -102,16 +100,15 @@ export class DesignationService {
 
   async findOne(id: string): Promise<DesignationEntity> {
     try {
-      // Single Designation Fetch
-      const expectedData = await this.designationRepository.findOne({
+      // find single designation
+      const designation = await this.designationRepository.findOne({
         where: { id },
       });
 
-      // Designation not found throw an error.
-      if (!expectedData) {
-        throw new NotFoundException('No Data Found!');
+      if (!designation) {
+        throw new NotFoundException('No designation found on this id!');
       }
-      return expectedData;
+      return designation;
     } catch (error) {
       throw new CustomException(error);
     }
@@ -123,7 +120,7 @@ export class DesignationService {
     user: AdminUserDto,
   ) {
     try {
-      //update data
+      // update single designation
       await this.designationRepository.update(
         {
           id: id,
@@ -134,11 +131,9 @@ export class DesignationService {
         },
       );
 
-      // Updated row getting
-      const designationData = await this.designationRepository.findOne(id);
+      const designation = await this.designationRepository.findOne(id);
 
-      //return updated row
-      return designationData;
+      return designation;
     } catch (error) {
       throw new CustomException(error);
     }
@@ -150,15 +145,14 @@ export class DesignationService {
     user: AdminUserDto,
   ) {
     try {
-      // Find data
-      const expectedData = await this.designationRepository.findOne(id);
+      // find designation
+      const findDesignation = await this.designationRepository.findOne(id);
 
-      // data not found throw an error.
-      if (!expectedData) {
-        throw new NotFoundException('No Data Found!');
+      if (!findDesignation) {
+        throw new NotFoundException('No designation found on this id!');
       }
 
-      //update data Status
+      //update designation Status
       await this.designationRepository.update(
         {
           id: id,
@@ -169,9 +163,9 @@ export class DesignationService {
         },
       );
 
-      const test = await this.designationRepository.findOne(id);
+      const designation = await this.designationRepository.findOne(id);
 
-      return test;
+      return designation;
     } catch (error) {
       throw new CustomException(error);
     }
@@ -179,16 +173,16 @@ export class DesignationService {
 
   async remove(id: string, user: AdminUserDto) {
     try {
-      // Find test
-      const expectedData = await this.designationRepository.findOne({ id: id });
+      // find designation
+      const findDesignation = await this.designationRepository.findOne({
+        id: id,
+      });
 
-      // Test not found throw an error.
-      if (!expectedData) {
-        throw new NotFoundException('No Test Found!');
+      if (!findDesignation) {
+        throw new NotFoundException('No designation found on this id!');
       }
 
       await this.connection.transaction(async (manager) => {
-        //Update Deleted By
         await manager.getRepository<DesignationEntity>('designations').update(
           {
             id: id,
@@ -198,7 +192,6 @@ export class DesignationService {
           },
         );
 
-        //Soft Delete Test
         await manager
           .getRepository<DesignationEntity>('designations')
           .softDelete(id);
@@ -211,21 +204,18 @@ export class DesignationService {
 
   async finalDelete(id: string) {
     try {
-      // Find test data
-      const expectedData = await this.designationRepository.find({
+      // find designation
+      const designation = await this.designationRepository.find({
         where: { id },
         withDeleted: true,
       });
 
-      // Data not found throw an error.
-      if (!expectedData) {
-        throw new NotFoundException('No Data Found!');
+      if (!designation) {
+        throw new NotFoundException('No designation found on this id!');
       }
 
-      //Delete data
       await this.designationRepository.delete(id);
 
-      //Return
       return true;
     } catch (error) {
       throw new CustomException(error);

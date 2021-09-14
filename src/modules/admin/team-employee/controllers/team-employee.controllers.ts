@@ -41,9 +41,12 @@ import { TeamEmployeeService } from '../services/team-employee.service';
 export class TeamEmployeeController {
   constructor(private readonly teamEmployeeService: TeamEmployeeService) {}
 
-  // Fetch all team-employees
+  /*
+    fetch all team-employees
+    return an array of objects
+  */
   @Get()
-  @ApiResponse({ description: 'Get All Team Employees', status: HttpStatus.OK })
+  @ApiResponse({ description: 'Get all team-employees', status: HttpStatus.OK })
   async findAll(
     @Query() filter: TeamEmployeeListDto,
     @Pagination() pagination: PaginationDto,
@@ -54,7 +57,7 @@ export class TeamEmployeeController {
     );
     return new PayloadResponseDTO({
       statusCode: HttpStatus.OK,
-      message: 'All Team Employee Fetched',
+      message: 'All team-employees fetched successfully',
       metadata: {
         page: pagination.page,
         totalCount: total,
@@ -64,9 +67,15 @@ export class TeamEmployeeController {
     });
   }
 
-  // Insert team employee
+  /*
+    create new team-employee
+    return single object
+  */
   @Post()
-  @ApiResponse({ description: 'Team Employee Add', status: HttpStatus.OK })
+  @ApiResponse({
+    description: 'Create new team-employee',
+    status: HttpStatus.OK,
+  })
   @ApiBody({ type: CreateTeamEmployeeDto })
   async create(
     @AdminUser() user: AdminUserDto,
@@ -79,30 +88,36 @@ export class TeamEmployeeController {
     );
     return new PayloadResponseDTO({
       statusCode: HttpStatus.OK,
-      message: 'Team Employee Created Successfully',
+      message: 'Team-employee created successfully',
       data: { teamEmployee },
     });
   }
 
-  // Fetch only active team-employees
+  /*
+    fetch all active team-employees
+    return an array of objects
+  */
   @Get('/list')
   @ApiResponse({
-    description: 'Get Only Active Team Employees',
+    description: 'Get only active team-employees',
     status: HttpStatus.OK,
   })
   async findAllList() {
     const [teamEmployees] = await this.teamEmployeeService.findAllList();
     return new PayloadResponseDTO({
       statusCode: HttpStatus.OK,
-      message: 'All Active Team Employee Fetched',
+      message: 'All active team-employees fetched successfully',
       data: { teamEmployees },
     });
   }
 
-  // Fetch single team employee
+  /*
+    fetch single team-employee
+    return single object
+  */
   @Get(':id')
   @ApiResponse({
-    description: 'Single Team Fetched',
+    description: 'Single team-employee fetched',
     status: HttpStatus.OK,
   })
   async findOne(
@@ -111,15 +126,18 @@ export class TeamEmployeeController {
     const teamEmployee = await this.teamEmployeeService.findOne(params.id);
     return new PayloadResponseDTO({
       statusCode: HttpStatus.OK,
-      message: 'Single Team Employee Fetched',
+      message: 'Single team-employee fetched successfully',
       data: { teamEmployee },
     });
   }
 
-  // Update team employee
+  /*
+    update single team-employee
+    return single object
+  */
   @Put(':id')
   @ApiResponse({
-    description: 'Single Team Employee Fetched',
+    description: 'Single team-employee updated',
     status: HttpStatus.OK,
   })
   async update(
@@ -127,22 +145,25 @@ export class TeamEmployeeController {
     @Param(new DtoValidationPipe()) params: TeamEmployeeIdParamDto,
     @Body(new DtoValidationPipe()) updateTeamEmployeeDto: UpdateTeamEmployeeDto,
   ) {
-    const team = await this.teamEmployeeService.update(
+    const teamEmployee = await this.teamEmployeeService.update(
       params.id,
       updateTeamEmployeeDto,
       user,
     );
     return new PayloadResponseDTO({
       statusCode: HttpStatus.OK,
-      message: 'Team Updated Successfully',
-      data: { team },
+      message: 'Team-employee updated successfully',
+      data: { teamEmployee },
     });
   }
 
-  // Update team-employee status
+  /*
+    update team-employee status
+    return single object
+  */
   @Patch(':id/status')
   @ApiResponse({
-    description: 'Single Team Status Updated',
+    description: 'Single team-employee status updated',
     status: HttpStatus.OK,
   })
   async status(
@@ -158,15 +179,18 @@ export class TeamEmployeeController {
     );
     return new PayloadResponseDTO({
       statusCode: HttpStatus.OK,
-      message: 'Team Employee Status Updated Successfully',
+      message: 'Team-employee status updated successfully',
       data: { teamEmployee },
     });
   }
 
-  // Soft delete single team-employee
+  /*
+    delete single team-employee - soft delete
+    return null
+  */
   @Delete(':id')
   @ApiResponse({
-    description: 'Single Team Employee Deleted',
+    description: 'Single team-employee deleted',
     status: HttpStatus.OK,
   })
   async remove(
@@ -176,20 +200,27 @@ export class TeamEmployeeController {
     await this.teamEmployeeService.remove(params.id, user);
     return new PayloadResponseDTO({
       statusCode: HttpStatus.OK,
-      message: 'Team Employee Soft Deleted',
+      message: 'Team-employee soft deleted',
       data: {},
     });
   }
 
-  // Hard delete single team-employee
+  /*
+    delete single team-employee - hard/permanent delete
+    return null
+  */
   @Delete('/:id/delete')
+  @ApiResponse({
+    description: 'Single team-employee deleted permanently',
+    status: HttpStatus.OK,
+  })
   async finalDelete(
     @Param(new DtoValidationPipe()) params: TeamEmployeeIdParamDto,
   ) {
     await this.teamEmployeeService.finalDelete(params.id);
     return new PayloadResponseDTO({
       statusCode: HttpStatus.OK,
-      message: 'Team Employee Completely Deleted',
+      message: 'Team-employee completely deleted',
       data: {},
     });
   }

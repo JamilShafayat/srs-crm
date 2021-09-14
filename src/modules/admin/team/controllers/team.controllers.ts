@@ -41,9 +41,12 @@ import { TeamService } from '../services/team.service';
 export class TeamController {
   constructor(private readonly teamService: TeamService) {}
 
-  // Fetch all teams
+  /*
+    fetch all teams
+    return an array of objects
+  */
   @Get()
-  @ApiResponse({ description: 'Get All Teams', status: HttpStatus.OK })
+  @ApiResponse({ description: 'Get all teams', status: HttpStatus.OK })
   async findAll(
     @Query() filter: TeamListDto,
     @Pagination() pagination: PaginationDto,
@@ -51,7 +54,7 @@ export class TeamController {
     const [teams, total] = await this.teamService.findAll(filter, pagination);
     return new PayloadResponseDTO({
       statusCode: HttpStatus.OK,
-      message: 'All Team Fetched',
+      message: 'All teams fetched successfully',
       metadata: {
         page: pagination.page,
         totalCount: total,
@@ -61,9 +64,12 @@ export class TeamController {
     });
   }
 
-  // Insert team
+  /*
+    create new team
+    return single object
+  */
   @Post()
-  @ApiResponse({ description: 'Team Add', status: HttpStatus.OK })
+  @ApiResponse({ description: 'Create new team', status: HttpStatus.OK })
   @ApiBody({ type: CreateTeamDto })
   async create(
     @AdminUser() user: AdminUserDto,
@@ -73,45 +79,54 @@ export class TeamController {
     const team = await this.teamService.create(createTeamDto, user);
     return new PayloadResponseDTO({
       statusCode: HttpStatus.OK,
-      message: 'Team Created Successfully',
+      message: 'Team created successfully',
       data: { team },
     });
   }
 
-  // Fetch only active teams
+  /*
+    fetch all active teams
+    return an array of objects
+  */
   @Get('/list')
   @ApiResponse({
-    description: 'Get Only Active Teams',
+    description: 'Get only active teams',
     status: HttpStatus.OK,
   })
   async findAllList() {
     const [teams] = await this.teamService.findAllList();
     return new PayloadResponseDTO({
       statusCode: HttpStatus.OK,
-      message: 'All Active Team Fetched',
+      message: 'All active teams fetched successfully',
       data: { teams },
     });
   }
 
-  // Fetch single team
+  /*
+    fetch single team
+    return single object
+  */
   @Get(':id')
   @ApiResponse({
-    description: 'Single Team Fetched',
+    description: 'Single team fetched',
     status: HttpStatus.OK,
   })
   async findOne(@Param(new DtoValidationPipe()) params: TeamIdParamDto) {
     const team = await this.teamService.findOne(params.id);
     return new PayloadResponseDTO({
       statusCode: HttpStatus.OK,
-      message: 'Single Team Fetched',
+      message: 'Single team fetched successfully',
       data: { team },
     });
   }
 
-  // Update team
+  /*
+    update single team
+    return single object
+  */
   @Put(':id')
   @ApiResponse({
-    description: 'Single Team Fetched',
+    description: 'Single team updated',
     status: HttpStatus.OK,
   })
   async update(
@@ -122,15 +137,18 @@ export class TeamController {
     const team = await this.teamService.update(params.id, updateTeamDto, user);
     return new PayloadResponseDTO({
       statusCode: HttpStatus.OK,
-      message: 'Team Updated Successfully',
+      message: 'Team updated successfully',
       data: { team },
     });
   }
 
-  // Update team status
+  /*
+    update team status
+    return single object
+  */
   @Patch(':id/status')
   @ApiResponse({
-    description: 'Single Team Status Updated',
+    description: 'Single team status updated',
     status: HttpStatus.OK,
   })
   async status(
@@ -146,15 +164,18 @@ export class TeamController {
     );
     return new PayloadResponseDTO({
       statusCode: HttpStatus.OK,
-      message: 'Team Status Updated Successfully',
+      message: 'Team status updated successfully',
       data: { team },
     });
   }
 
-  // Soft delete single team
+  /*
+    delete single team - soft delete
+    return null
+  */
   @Delete(':id')
   @ApiResponse({
-    description: 'Single Team Deleted',
+    description: 'Single team deleted',
     status: HttpStatus.OK,
   })
   async remove(
@@ -164,18 +185,21 @@ export class TeamController {
     await this.teamService.remove(params.id, user);
     return new PayloadResponseDTO({
       statusCode: HttpStatus.OK,
-      message: 'Team Soft Deleted',
+      message: 'Team soft deleted',
       data: {},
     });
   }
 
-  // Hard delete single team
+  /*
+    delete single team - hard/permanent delete
+    return null
+  */
   @Delete('/:id/delete')
   async finalDelete(@Param(new DtoValidationPipe()) params: TeamIdParamDto) {
     await this.teamService.finalDelete(params.id);
     return new PayloadResponseDTO({
       statusCode: HttpStatus.OK,
-      message: 'Team Completely Deleted',
+      message: 'Team completely deleted',
       data: {},
     });
   }

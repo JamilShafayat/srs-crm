@@ -41,12 +41,10 @@ export class TeamService {
         take: pagination.limit,
       });
 
-      //count total teams
       const total = await this.teamRepository.count({
         where: { ...whereCondition },
       });
 
-      // return fetched data
       return [teams, total];
     } catch (error) {
       throw new CustomException(error);
@@ -58,29 +56,25 @@ export class TeamService {
       const { name } = createTeamDto;
 
       //find existing team
-      const findExisting = await this.teamRepository.findOne({ name });
+      const findTeam = await this.teamRepository.findOne({ name });
 
-      // if found team
-      if (findExisting) {
-        // throw an exception
+      if (findTeam) {
         throw new ValidationException([
           {
             field: 'name',
-            message: 'This Team Name Already Exists.',
+            message: 'This team name already exists in the system.',
           },
         ]);
       }
 
-      const data = {
+      const createTeam = {
         name,
         created_by: user.id,
       };
 
-      // team store
-      const addedTeamData = await this.teamRepository.save(data);
+      const team = await this.teamRepository.save(createTeam);
 
-      // created data return
-      return addedTeamData;
+      return team;
     } catch (error) {
       throw new CustomException(error);
     }
@@ -88,13 +82,12 @@ export class TeamService {
 
   async findAllList() {
     try {
-      // all active data fetch
-      const expectedData = await this.teamRepository.findAndCount({
+      // find all active teams
+      const teams = await this.teamRepository.findAndCount({
         status: 1,
       });
 
-      // return fetched data
-      return expectedData;
+      return teams;
     } catch (error) {
       throw new CustomException(error);
     }
@@ -102,16 +95,15 @@ export class TeamService {
 
   async findOne(id: string): Promise<TeamEntity> {
     try {
-      // Single team fetch
-      const expectedData = await this.teamRepository.findOne({
+      // find single team
+      const team = await this.teamRepository.findOne({
         where: { id },
       });
 
-      // Team not found throw an error.
-      if (!expectedData) {
-        throw new NotFoundException('No Data Found!');
+      if (!team) {
+        throw new NotFoundException('No team found on this id!');
       }
-      return expectedData;
+      return team;
     } catch (error) {
       throw new CustomException(error);
     }
@@ -119,7 +111,14 @@ export class TeamService {
 
   async update(id: string, updateTeamDto: UpdateTeamDto, user: AdminUserDto) {
     try {
-      //update data
+      // find team
+      const findTeam = await this.teamRepository.findOne(id);
+
+      if (!findTeam) {
+        throw new NotFoundException('No team found on this id!');
+      }
+
+      // update single team
       await this.teamRepository.update(
         {
           id: id,
@@ -130,11 +129,9 @@ export class TeamService {
         },
       );
 
-      // Updated row getting
-      const TeamData = await this.teamRepository.findOne(id);
+      const team = await this.teamRepository.findOne(id);
 
-      //return updated row
-      return TeamData;
+      return team;
     } catch (error) {
       throw new CustomException(error);
     }
@@ -146,15 +143,13 @@ export class TeamService {
     user: AdminUserDto,
   ) {
     try {
-      // find data
-      const expectedData = await this.teamRepository.findOne(id);
+      // find team
+      const findTeam = await this.teamRepository.findOne(id);
 
-      // data not found throw an error.
-      if (!expectedData) {
-        throw new NotFoundException('No Data Found!');
+      if (!findTeam) {
+        throw new NotFoundException('No team found on this id!');
       }
 
-      //update data status
       await this.teamRepository.update(
         {
           id: id,
@@ -175,16 +170,14 @@ export class TeamService {
 
   async remove(id: string, user: AdminUserDto) {
     try {
-      // Find Team
-      const expectedData = await this.teamRepository.findOne({ id: id });
+      // find team
+      const team = await this.teamRepository.findOne({ id: id });
 
-      // Team not found throw an error.
-      if (!expectedData) {
-        throw new NotFoundException('No Team Found!');
+      if (!team) {
+        throw new NotFoundException('No Team Found on this id!');
       }
 
       await this.connection.transaction(async (manager) => {
-        //update deleted by
         await manager.getRepository<TeamEntity>('teams').update(
           {
             id: id,
@@ -194,7 +187,6 @@ export class TeamService {
           },
         );
 
-        //soft delete team
         await manager.getRepository<TeamEntity>('teams').softDelete(id);
         return true;
       });
@@ -205,21 +197,18 @@ export class TeamService {
 
   async finalDelete(id: string) {
     try {
-      // find team id
-      const expectedData = await this.teamRepository.find({
+      // find team
+      const team = await this.teamRepository.find({
         where: { id },
         withDeleted: true,
       });
 
-      // team id not found throw an error.
-      if (!expectedData) {
-        throw new NotFoundException('No Team Found!');
+      if (!team) {
+        throw new NotFoundException('No team found on this id!');
       }
 
-      //delete team
       await this.teamRepository.delete(id);
 
-      //Return
       return true;
     } catch (error) {
       throw new CustomException(error);

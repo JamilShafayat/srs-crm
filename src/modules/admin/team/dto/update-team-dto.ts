@@ -4,7 +4,7 @@ import { IsNotEmpty, IsString, MaxLength, MinLength } from 'class-validator';
 export class UpdateTeamDto {
   @ApiProperty({
     type: String,
-    description: 'Team Name',
+    description: 'Team name',
     default: 'Team One',
   })
   @IsString()

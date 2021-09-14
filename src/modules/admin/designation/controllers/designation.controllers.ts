@@ -41,9 +41,12 @@ import { DesignationService } from '../services/designation.service';
 export class DesignationController {
   constructor(private readonly designationService: DesignationService) {}
 
-  // Fetch all designations
+  /*
+    fetch all designations
+    return an array of objects
+  */
   @Get()
-  @ApiResponse({ description: 'Get All Designations', status: HttpStatus.OK })
+  @ApiResponse({ description: 'Get all designations', status: HttpStatus.OK })
   async findAll(
     @Query() filter: DesignationListDto,
     @Pagination() pagination: PaginationDto,
@@ -54,7 +57,7 @@ export class DesignationController {
     );
     return new PayloadResponseDTO({
       statusCode: HttpStatus.OK,
-      message: 'All Designation Fetched',
+      message: 'All designation fetched successfully',
       metadata: {
         page: pagination.page,
         totalCount: total,
@@ -64,14 +67,17 @@ export class DesignationController {
     });
   }
 
-  // Insert designation
+  /*
+    create new designation
+    return single object
+  */
   @Post()
-  @ApiResponse({ description: 'Designation Add', status: HttpStatus.OK }) // swagger header for designation create request
+  @ApiResponse({ description: 'Create new client', status: HttpStatus.OK })
   @ApiBody({ type: CreateDesignationDto })
   async create(
     @AdminUser() user: AdminUserDto,
     @Body(new DtoValidationPipe()) createDesignationDto: CreateDesignationDto,
-    @TransactionManager() manager: EntityManager, //if needed transaction use @TransactionManager
+    @TransactionManager() manager: EntityManager,
   ) {
     const designation = await this.designationService.create(
       createDesignationDto,
@@ -79,45 +85,54 @@ export class DesignationController {
     );
     return new PayloadResponseDTO({
       statusCode: HttpStatus.OK,
-      message: 'Designation Created Successfully',
+      message: 'Designation created successfully',
       data: { designation },
     });
   }
 
-  // Fetch only active designations
+  /*
+    fetch all active designations
+    return an array of objects
+  */
   @Get('/list')
   @ApiResponse({
-    description: 'Get Only Active Designations',
+    description: 'Get only active designations',
     status: HttpStatus.OK,
   })
   async findAllList() {
     const [designations] = await this.designationService.findAllList();
     return new PayloadResponseDTO({
       statusCode: HttpStatus.OK,
-      message: 'All Active Designations Fetched',
+      message: 'All active designations fetched successfully',
       data: { designations },
     });
   }
 
-  // Fetch single designation
+  /*
+    fetch single designation
+    return single object
+  */
   @Get(':id')
   @ApiResponse({
-    description: 'Single Designation Fetched',
+    description: 'Single designation fetched',
     status: HttpStatus.OK,
   })
   async findOne(@Param(new DtoValidationPipe()) params: DesignationIdParamDto) {
     const designation = await this.designationService.findOne(params.id);
     return new PayloadResponseDTO({
       statusCode: HttpStatus.OK,
-      message: 'Single Designation Fetched',
+      message: 'Single designation fetched successfully',
       data: { designation },
     });
   }
 
-  // Update designation
+  /*
+    update single designation
+    return single object
+  */
   @Put(':id')
   @ApiResponse({
-    description: 'Single Designation Fetched',
+    description: 'Single designation updated',
     status: HttpStatus.OK,
   })
   async update(
@@ -132,15 +147,18 @@ export class DesignationController {
     );
     return new PayloadResponseDTO({
       statusCode: HttpStatus.OK,
-      message: 'Designation Updated',
+      message: 'Designation updated successfully',
       data: { designation },
     });
   }
 
-  // Update designation status
+  /*
+    update designation status
+    return single object
+  */
   @Patch(':id/status')
   @ApiResponse({
-    description: 'Single Designation Status Changed',
+    description: 'Single designation status changed',
     status: HttpStatus.OK,
   })
   async status(
@@ -156,15 +174,18 @@ export class DesignationController {
     );
     return new PayloadResponseDTO({
       statusCode: HttpStatus.OK,
-      message: 'Designation Status Updated',
+      message: 'Designation status updated successfully',
       data: { designation },
     });
   }
 
-  // Soft delete single designation
+  /*
+    delete single designation - soft delete
+    return null
+  */
   @Delete(':id')
   @ApiResponse({
-    description: 'Single Designation Deleted',
+    description: 'Single designation deleted',
     status: HttpStatus.OK,
   })
   async remove(
@@ -174,20 +195,27 @@ export class DesignationController {
     await this.designationService.remove(params.id, user);
     return new PayloadResponseDTO({
       statusCode: HttpStatus.OK,
-      message: 'Designation Soft Deleted',
+      message: 'Designation soft deleted',
       data: {},
     });
   }
 
-  // Hard delete single designation
+  /*
+    delete single designation - hard/permanent delete
+    return null
+  */
   @Delete('/:id/delete')
+  @ApiResponse({
+    description: 'Single designation deleted permanently',
+    status: HttpStatus.OK,
+  })
   async finalDelete(
     @Param(new DtoValidationPipe()) params: DesignationIdParamDto,
   ) {
     await this.designationService.finalDelete(params.id);
     return new PayloadResponseDTO({
       statusCode: HttpStatus.OK,
-      message: 'Designation Completely Deleted',
+      message: 'Designation completely deleted',
       data: {},
     });
   }

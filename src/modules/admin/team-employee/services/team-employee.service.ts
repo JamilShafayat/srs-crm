@@ -2,6 +2,8 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { AdminUserDto } from 'src/common/dto/admin-user.dto';
 import { PaginationDto } from 'src/common/dto/Pagination.dto';
+import { EmployeeEntity } from 'src/common/entities/employee.entity';
+import { TeamEntity } from 'src/common/entities/team.entity';
 import { TeamEmployeeEntity } from 'src/common/entities/team_employee.entity';
 import { CustomException } from 'src/common/exceptions/customException';
 import { Connection, Equal, Repository } from 'typeorm';
@@ -13,6 +15,10 @@ import { UpdateTeamEmployeeDto } from '../dto/update-team-employee.dto';
 @Injectable()
 export class TeamEmployeeService {
   constructor(
+    @InjectRepository(EmployeeEntity)
+    private readonly employeeRepository: Repository<EmployeeEntity>,
+    @InjectRepository(TeamEntity)
+    private readonly teamRepository: Repository<TeamEntity>,
     @InjectRepository(TeamEmployeeEntity)
     private readonly teamEmployeeRepository: Repository<TeamEmployeeEntity>,
     private connection: Connection,
@@ -25,12 +31,12 @@ export class TeamEmployeeService {
     try {
       const whereCondition = {};
 
-      //status filter
+      // status filter
       if (filter.status) {
         whereCondition['status'] = Equal(filter.status);
       }
 
-      //find team-employees
+      // find team-employees
       const teamEmployees = await this.teamEmployeeRepository.find({
         where: {
           ...whereCondition,
@@ -41,12 +47,10 @@ export class TeamEmployeeService {
         relations: ['employee_info', 'team_info'],
       });
 
-      //count total team-employees
       const total = await this.teamEmployeeRepository.count({
         where: { ...whereCondition },
       });
 
-      // return fetched data
       return [teamEmployees, total];
     } catch (error) {
       throw new CustomException(error);
@@ -60,19 +64,35 @@ export class TeamEmployeeService {
     try {
       const { employee_id, team_id } = createTeamEmployeeDto;
 
-      const data = {
+      // find employee
+      const findEmployee = await this.employeeRepository.findOne({
+        where: { id: employee_id },
+      });
+
+      if (!findEmployee) {
+        throw new NotFoundException('No employee found on this id!');
+      }
+
+      // find team
+      const findTeam = await this.teamRepository.findOne({
+        where: { id: employee_id },
+      });
+
+      if (!findTeam) {
+        throw new NotFoundException('No team found on this id!');
+      }
+
+      const createTeamEmployee = {
         employee_id,
         team_id,
         created_by: user.id,
       };
 
-      // team-employees store
-      const addedTeamEmployeeData = await this.teamEmployeeRepository.save(
-        data,
+      const teamEmployee = await this.teamEmployeeRepository.save(
+        createTeamEmployee,
       );
 
-      // created data return
-      return addedTeamEmployeeData;
+      return teamEmployee;
     } catch (error) {
       throw new CustomException(error);
     }
@@ -80,13 +100,12 @@ export class TeamEmployeeService {
 
   async findAllList() {
     try {
-      // all active data fetch
-      const expectedData = await this.teamEmployeeRepository.findAndCount({
+      // find all active team-employees
+      const teamEmployees = await this.teamEmployeeRepository.findAndCount({
         status: 1,
       });
 
-      // return fetched data
-      return expectedData;
+      return teamEmployees;
     } catch (error) {
       throw new CustomException(error);
     }
@@ -94,17 +113,16 @@ export class TeamEmployeeService {
 
   async findOne(id: string): Promise<TeamEmployeeEntity> {
     try {
-      // Single team-employee fetch
-      const expectedData = await this.teamEmployeeRepository.findOne({
+      // find single team-employee
+      const teamEmployee = await this.teamEmployeeRepository.findOne({
         where: { id },
         relations: ['employee_info', 'team_info'],
       });
 
-      // Team-employee not found throw an error.
-      if (!expectedData) {
-        throw new NotFoundException('No Data Found!');
+      if (!teamEmployee) {
+        throw new NotFoundException('No team-employee found on this id!');
       }
-      return expectedData;
+      return teamEmployee;
     } catch (error) {
       throw new CustomException(error);
     }
@@ -116,7 +134,14 @@ export class TeamEmployeeService {
     user: AdminUserDto,
   ) {
     try {
-      //update data
+      // find team-employee
+      const findTeamEmployee = await this.teamEmployeeRepository.findOne(id);
+
+      if (!findTeamEmployee) {
+        throw new NotFoundException('No team-employee found on this id!');
+      }
+
+      // update single team-employee
       await this.teamEmployeeRepository.update(
         {
           id: id,
@@ -128,14 +153,12 @@ export class TeamEmployeeService {
         },
       );
 
-      // Updated row getting
-      const TeamEmployeeData = await this.teamEmployeeRepository.findOne({
+      const TeamEmployee = await this.teamEmployeeRepository.findOne({
         where: { id },
         relations: ['employee_info', 'team_info'],
       });
 
-      //return updated row
-      return TeamEmployeeData;
+      return TeamEmployee;
     } catch (error) {
       throw new CustomException(error);
     }
@@ -147,15 +170,14 @@ export class TeamEmployeeService {
     user: AdminUserDto,
   ) {
     try {
-      // find data
-      const expectedData = await this.teamEmployeeRepository.findOne(id);
+      // find team-employee
+      const findTeamEmployee = await this.teamEmployeeRepository.findOne(id);
 
-      // data not found throw an error.
-      if (!expectedData) {
-        throw new NotFoundException('No Data Found!');
+      if (!findTeamEmployee) {
+        throw new NotFoundException('No team-employee found on this id!');
       }
 
-      //update data status
+      // update team-employee status
       await this.teamEmployeeRepository.update(
         {
           id: id,
@@ -176,18 +198,16 @@ export class TeamEmployeeService {
 
   async remove(id: string, user: AdminUserDto) {
     try {
-      // Find Team-employee
-      const expectedData = await this.teamEmployeeRepository.findOne({
+      // find team-employee
+      const teamEmployee = await this.teamEmployeeRepository.findOne({
         id: id,
       });
 
-      // Team-employee not found throw an error.
-      if (!expectedData) {
-        throw new NotFoundException('No Team Found!');
+      if (!teamEmployee) {
+        throw new NotFoundException('No team-employee found on this id!');
       }
 
       await this.connection.transaction(async (manager) => {
-        //update deleted by
         await manager
           .getRepository<TeamEmployeeEntity>('team_employees')
           .update(
@@ -199,7 +219,6 @@ export class TeamEmployeeService {
             },
           );
 
-        //soft delete team
         await manager
           .getRepository<TeamEmployeeEntity>('team_employees')
           .softDelete(id);
@@ -212,21 +231,18 @@ export class TeamEmployeeService {
 
   async finalDelete(id: string) {
     try {
-      // find team-employee id
-      const expectedData = await this.teamEmployeeRepository.find({
+      // find team-employee
+      const teamEmployee = await this.teamEmployeeRepository.find({
         where: { id },
         withDeleted: true,
       });
 
-      // team-employee id not found throw an error.
-      if (!expectedData) {
-        throw new NotFoundException('No Team-employee Found!');
+      if (!teamEmployee) {
+        throw new NotFoundException('No team-employee found on this id!');
       }
 
-      //delete team-employee
       await this.teamEmployeeRepository.delete(id);
 
-      //return
       return true;
     } catch (error) {
       throw new CustomException(error);

@@ -60,7 +60,7 @@ export class ClientController {
 
       return new PayloadResponseDTO({
         statusCode: HttpStatus.OK,
-        message: 'All clients fetched Successfully',
+        message: 'All clients fetched successfully',
         metadata: {
           page: pagination.page,
           totalCount: total,
@@ -174,7 +174,7 @@ export class ClientController {
   */
   @Patch(':id/status')
   @ApiResponse({
-    description: 'Single client status changed',
+    description: 'Single client status updated',
     status: HttpStatus.OK,
   })
   async status(

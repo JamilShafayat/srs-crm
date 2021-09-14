@@ -123,12 +123,12 @@ export class ClientService {
   async findAllList() {
     try {
       // find all active clients
-      const findClient = await this.clientRepository.find({
+      const findClients = await this.clientRepository.find({
         where: { status: 1 },
         relations: ['user_info'],
       });
 
-      return findClient;
+      return findClients;
     } catch (error) {
       throw new CustomException(error);
     }
@@ -136,6 +136,7 @@ export class ClientService {
 
   async findOne(id: string): Promise<ClientEntity> {
     try {
+      // find single client
       const findClient = await this.clientRepository.findOne({
         where: { id },
         relations: ['user_info'],
@@ -157,6 +158,14 @@ export class ClientService {
     user: AdminUserDto,
   ) {
     try {
+      // find client
+      const findClient = await this.clientRepository.findOne(id);
+
+      if (!findClient) {
+        throw new NotFoundException('No client found on this id!');
+      }
+
+      // update single client
       await this.clientRepository.update(
         {
           id: id,
