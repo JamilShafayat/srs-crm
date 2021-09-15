@@ -1,4 +1,110 @@
 {
-		"js/ts.implicitProjectConfig.experimentalDecorators": true,
-		"git.ignoreLimitWarning": true
+	"workbench.colorTheme": "Winter is Coming (Dark Blue)",
+	"workbench.iconTheme": "material-icon-theme",
+	// "workbench.iconTheme": "vscode-icons",
+	// editor
+	"editor.tabSize": 2,
+	"editor.fontSize": 14,
+	"editor.fontFamily": "Verdana",
+	"editor.insertSpaces": false,
+	"editor.detectIndentation": false,
+	"editor.suggestSelection": "first",
+	"editor.defaultFormatter": "esbenp.prettier-vscode",
+	"editor.formatOnSave": true,
+	// cursor
+	"editor.cursorSmoothCaretAnimation": true,
+	"editor.cursorBlinking": "expand",
+	"editor.codeActionsOnSave": {
+		"source.fixAll.eslint": true,
+		"source.fixAll.tslint": true,
+		"source.organizeImports": true
+	},
+	"editor.fontLigatures": true,
+	"editor.wordWrap": "on",
+	"editor.minimap.enabled": false,
+	"editor.tokenColorCustomizations": {
+		"textMateRules": [
+			{
+				"scope": "comment",
+				"settings": {
+					"fontStyle": "bold"
+				}
+			}
+		]
+	},
+	"eslint.alwaysShowStatus": true,
+	"jshint.options": {
+		"esversion": 6
+	},
+	"vsintellicode.modify.editor.suggestSelection": "automaticallyOverrodeDefaultValue",
+	"python.jediEnabled": false,
+	"python.languageServer": "Microsoft",
+	"explorer.confirmDelete": false,
+	"workbench.editorAssociations": {
+		"*.ipynb": "jupyter.notebook.ipynb"
+	},
+	// html
+	"[html]": {
+		"editor.defaultFormatter": "esbenp.prettier-vscode"
+	},
+	// javaScript
+	"javascript.updateImportsOnFileMove.enabled": "always",
+	"[javascript]": {
+		"editor.formatOnSave": true, // can be false
+		"editor.defaultFormatter": "esbenp.prettier-vscode", // can be null
+		"editor.tabSize": 2
+	},
+	"[javascriptreact]": {
+		"editor.formatOnSave": false,
+		"editor.defaultFormatter": null
+	},
+	// typeScript
+	"typescript.updateImportsOnFileMove.enabled": "always",
+	"[typescript]": {
+		"editor.defaultFormatter": "vscode.typescript-language-features",
+		"editor.tabSize": 2
+	},
+	"[typescriptreact]": {
+		"editor.defaultFormatter": "esbenp.prettier-vscode"
+	},
+	"yaml.schemas": {
+		"file:///c%3A/Users/Jamil%20Shafayat/.vscode/extensions/atlassian.atlascode-2.9.1/resources/schemas/pipelines-schema.json": "bitbucket-pipelines.yml"
+	},
+	"prettier.tabWidth": 2,
+	"prettier.useTabs": true,
+	"explorer.confirmDragAndDrop": false,
+	"workbench.startupEditor": "none",
+	//terminal
+	"terminal.integrated.tabs.enabled": true,
+	"terminal.integrated.defaultProfile.windows": "PowerShell",
+	"redhat.telemetry.enabled": false,
+	"terminal.integrated.fontSize": 12,
+	"terminal.integrated.fontWeight": "normal",
+	"terminal.integrated.fontFamily": "monospace",
+	// terminal customization
+	"workbench.colorCustomizations": {
+		"terminal.background": "#012841",
+		"terminal.foreground": "#ffffff",
+		"terminalCursor.background": "#50ee34",
+		"terminalCursor.foreground": "#A89984",
+		"terminal.ansiBlack": "#1D2021",
+		"terminal.ansiBlue": "#0D6678",
+		"terminal.ansiBrightBlack": "#665C54",
+		"terminal.ansiBrightBlue": "#0D6678",
+		"terminal.ansiBrightCyan": "#8BA59B",
+		"terminal.ansiBrightGreen": "#95C085",
+		"terminal.ansiBrightMagenta": "#8F4673",
+		"terminal.ansiBrightRed": "#FB543F",
+		"terminal.ansiBrightWhite": "#FDF4C1",
+		"terminal.ansiBrightYellow": "#14b148",
+		"terminal.ansiCyan": "#8BA59B",
+		"terminal.ansiGreen": "#95C085",
+		"terminal.ansiMagenta": "#8F4673",
+		"terminal.ansiRed": "#FB543F",
+		"terminal.ansiWhite": "#A89984",
+		"terminal.ansiYellow": "#FAC03B"
+	},
+	"workbench.editor.enablePreview": false,
+	"git.autofetch": true,
+	"files.autoSave": "afterDelay"
 }

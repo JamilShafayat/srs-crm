@@ -1,22 +1,22 @@
 import {
-  Body,
-  Controller,
-  Delete,
-  Get,
-  HttpStatus,
-  Param,
-  Patch,
-  Post,
-  Put,
-  Query,
-  UseGuards,
+	Body,
+	Controller,
+	Delete,
+	Get,
+	HttpStatus,
+	Param,
+	Patch,
+	Post,
+	Put,
+	Query,
+	UseGuards
 } from '@nestjs/common';
 import {
-  ApiBearerAuth,
-  ApiBody,
-  ApiResponse,
-  ApiTags,
-  ApiUnauthorizedResponse,
+	ApiBearerAuth,
+	ApiBody,
+	ApiResponse,
+	ApiTags,
+	ApiUnauthorizedResponse
 } from '@nestjs/swagger';
 import { AdminUser } from 'src/common/decorators/Admin/admin-user.decorator';
 import { Pagination } from 'src/common/decorators/pagination.decorator';
@@ -41,9 +41,12 @@ import { ProjectService } from '../services/project.service';
 export class ProjectController {
   constructor(private readonly projectService: ProjectService) {}
 
-  // Fetch all project
+  /*
+    fetch all projects
+    return an array of objects
+  */
   @Get()
-  @ApiResponse({ description: 'Get All Projects', status: HttpStatus.OK })
+  @ApiResponse({ description: 'Get all projects', status: HttpStatus.OK })
   async findAll(
     @Query() filter: ProjectFilterListDto,
     @Pagination() pagination: PaginationDto,
@@ -54,7 +57,7 @@ export class ProjectController {
     );
     return new PayloadResponseDTO({
       statusCode: HttpStatus.OK,
-      message: 'All Project Fetched',
+      message: 'All project fetched successfully',
       metadata: {
         page: pagination.page,
         totalCount: total,
@@ -64,9 +67,12 @@ export class ProjectController {
     });
   }
 
-  // Insert project data
+  /*
+    create new project
+    return single object
+  */
   @Post()
-  @ApiResponse({ description: 'Project Create', status: HttpStatus.OK })
+  @ApiResponse({ description: 'Create new project', status: HttpStatus.OK })
   @ApiBody({ type: CreateProjectDto })
   async create(
     @AdminUser() user: AdminUserDto,
@@ -77,45 +83,54 @@ export class ProjectController {
     const project = await this.projectService.create(createProjectDto, user);
     return new PayloadResponseDTO({
       statusCode: HttpStatus.OK,
-      message: 'Project Created Successfully',
+      message: 'Project created successfully',
       data: { project },
     });
   }
 
-  // Fetch only active project
+  /*
+    fetch all active projects
+    return an array of objects
+  */
   @Get('/list')
   @ApiResponse({
-    description: 'Get Only Active Project',
+    description: 'Get only active project',
     status: HttpStatus.OK,
   })
   async findAllList() {
     const [projects] = await this.projectService.findAllList();
     return new PayloadResponseDTO({
       statusCode: HttpStatus.OK,
-      message: 'All Active Project Fetched',
+      message: 'All active project fetched successfully',
       data: { projects },
     });
   }
 
-  // Fetch single project
+  /*
+    fetch single project
+    return single object
+  */
   @Get(':id')
   @ApiResponse({
-    description: 'Single Project Fetched',
+    description: 'Single project fetched',
     status: HttpStatus.OK,
   })
   async findOne(@Param(new DtoValidationPipe()) params: ProjectIdParamDto) {
     const project = await this.projectService.findOne(params.id);
     return new PayloadResponseDTO({
       statusCode: HttpStatus.OK,
-      message: 'Single Project Fetched',
+      message: 'Single project fetched successfully',
       data: { project },
     });
   }
 
-  // Update project data
+  /*
+    update single project
+    return single object
+  */
   @Put(':id')
   @ApiResponse({
-    description: 'Single Project Updated',
+    description: 'Single project updated',
     status: HttpStatus.OK,
   })
   async update(
@@ -130,15 +145,18 @@ export class ProjectController {
     );
     return new PayloadResponseDTO({
       statusCode: HttpStatus.OK,
-      message: 'Project Updated Successfully',
+      message: 'Project updated successfully',
       data: { project },
     });
   }
 
-  // Update project status
+  /*
+    update project status
+    return single object
+  */
   @Patch(':id/status')
   @ApiResponse({
-    description: 'Single Project Status Changed',
+    description: 'Single project status updated',
     status: HttpStatus.OK,
   })
   async status(
@@ -154,15 +172,18 @@ export class ProjectController {
     );
     return new PayloadResponseDTO({
       statusCode: HttpStatus.OK,
-      message: 'Project Status Updated Successfully',
+      message: 'Project status updated successfully',
       data: { project },
     });
   }
 
-  // Soft delete single project
+  /*
+    delete single project - soft delete
+    return null
+  */
   @Delete(':id')
   @ApiResponse({
-    description: 'Single Project Deleted',
+    description: 'Single project deleted',
     status: HttpStatus.OK,
   })
   async remove(
@@ -172,18 +193,25 @@ export class ProjectController {
     await this.projectService.remove(params.id, user);
     return new PayloadResponseDTO({
       statusCode: HttpStatus.OK,
-      message: 'Project Soft Deleted',
+      message: 'Project soft deleted',
       data: {},
     });
   }
 
-  // Hard delete single project
+  /*
+    delete single project - hard/permanent delete
+    return null
+  */
   @Delete('/:id/delete')
+	@ApiResponse({
+    description: 'Single project deleted permanently',
+    status: HttpStatus.OK,
+  })
   async finalDelete(@Param(new DtoValidationPipe()) params: ProjectIdParamDto) {
     await this.projectService.finalDelete(params.id);
     return new PayloadResponseDTO({
       statusCode: HttpStatus.OK,
-      message: 'Project Completely Deleted',
+      message: 'Project completely deleted',
       data: {},
     });
   }
