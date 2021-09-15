@@ -1,7 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
 import PaginationBaseDTO from 'src/common/dto/pagination-base.dto';
 
-export class AdminUserListDto extends PaginationBaseDTO {
+export class TeamEmployeeListDto extends PaginationBaseDTO {
   @ApiProperty({
     type: String,
     description: 'Status',
@@ -9,12 +9,4 @@ export class AdminUserListDto extends PaginationBaseDTO {
     required: false,
   })
   status: string;
-
-  @ApiProperty({
-    type: String,
-    description: 'Mobile Number',
-    default: '',
-    required: false,
-  })
-  phone: string;
 }

@@ -3,27 +3,27 @@ import { InjectRepository } from '@nestjs/typeorm';
 import * as bcrypt from 'bcrypt';
 import { AdminUserDto } from 'src/common/dto/admin-user.dto';
 import { PaginationDto } from 'src/common/dto/Pagination.dto';
-import { AdminUserEntity } from 'src/common/entities/admin/users/user.entity';
+import { UserEntity } from 'src/common/entities/user.entity';
 import { CustomException } from 'src/common/exceptions/customException';
 import { ValidationException } from 'src/common/exceptions/validationException';
 import { Connection, Equal, Not, Repository } from 'typeorm';
-import { AdminUserListDto } from '../dto/admin-user-list.dto';
-import { CreateAdminUserDto } from '../dto/create-user.dto';
-import { StatusChangeAdminUserDto } from '../dto/status-change-user.dto';
-import { UpdateAdminUserDto } from '../dto/update-user.dto';
+import { CreateUserDto } from '../dto/create-user.dto';
+import { StatusChangeUserDto } from '../dto/status-change-user.dto';
+import { UpdateUserDto } from '../dto/update-user.dto';
+import { UserFilterListDto } from '../dto/user-filter-list.dto';
 
 @Injectable()
-export class AdminUsersService {
+export class UsersService {
   constructor(
-    @InjectRepository(AdminUserEntity)
-    private readonly adminUserRepository: Repository<AdminUserEntity>,
+    @InjectRepository(UserEntity)
+    private readonly userRepository: Repository<UserEntity>,
     private connection: Connection,
   ) {}
 
   async findAll(
-    filter: AdminUserListDto,
+    filter: UserFilterListDto,
     pagination: PaginationDto,
-  ): Promise<[AdminUserEntity[], number]> {
+  ): Promise<[UserEntity[], number]> {
     try {
       const whereCondition = {};
 
@@ -38,7 +38,7 @@ export class AdminUsersService {
       }
 
       //find users
-      const users = await this.adminUserRepository.find({
+      const users = await this.userRepository.find({
         where: {
           ...whereCondition,
         },
@@ -48,7 +48,7 @@ export class AdminUsersService {
       });
 
       //count total categories
-      const total = await this.adminUserRepository.count({
+      const total = await this.userRepository.count({
         where: { ...whereCondition },
       });
 
@@ -59,15 +59,12 @@ export class AdminUsersService {
     }
   }
 
-  async create(
-    createAdminUserDto: CreateAdminUserDto,
-    adminUser: AdminUserDto,
-  ) {
+  async create(createUserDto: CreateUserDto, adminUser: AdminUserDto) {
     try {
-      const { full_name, phone, password, user_type } = createAdminUserDto;
+      const { name, phone, password, user_type } = createUserDto;
 
       //find Existing Entry
-      const findExisting = await this.adminUserRepository.findOne({ phone });
+      const findExisting = await this.userRepository.findOne({ phone });
 
       // Entry if found
       if (findExisting) {
@@ -75,7 +72,7 @@ export class AdminUsersService {
         throw new ValidationException([
           {
             field: 'phone',
-            message: 'User Already  Exists.',
+            message: 'User Already Exists.',
           },
         ]);
       }
@@ -83,14 +80,14 @@ export class AdminUsersService {
       //Data store
       const hashedPassword = await bcrypt.hash(password, 12);
       const data = {
-        full_name,
+        name,
         phone,
         user_type,
         password: hashedPassword,
         created_by: adminUser.id,
       };
 
-      const addedUserData = await this.adminUserRepository.save(data);
+      const addedUserData = await this.userRepository.save(data);
 
       // Created Data Return
       return addedUserData;
@@ -102,7 +99,7 @@ export class AdminUsersService {
   async findAllList() {
     try {
       // All Active Data Fetch
-      const expectedData = await this.adminUserRepository.findAndCount({
+      const expectedData = await this.userRepository.findAndCount({
         status: 1,
       });
 
@@ -113,10 +110,10 @@ export class AdminUsersService {
     }
   }
 
-  async findOne(id: string): Promise<AdminUserEntity> {
+  async findOne(id: string): Promise<UserEntity> {
     try {
       // Single User Fetch
-      const expectedData = await this.adminUserRepository.findOne({
+      const expectedData = await this.userRepository.findOne({
         where: { id },
       });
 
@@ -132,43 +129,43 @@ export class AdminUsersService {
 
   async update(
     id: string,
-    updateAdminUserDto: UpdateAdminUserDto,
+    updateUserDto: UpdateUserDto,
     adminUser: AdminUserDto,
   ) {
     try {
       // Find Data
       const whereCondition = {};
-      whereCondition['phone'] = Equal(updateAdminUserDto.phone);
+      whereCondition['phone'] = Equal(updateUserDto.phone);
       whereCondition['id'] = Not(Equal(id));
-      const udEexpectedData = await this.adminUserRepository.findOne({
+      const unEexpectedData = await this.userRepository.findOne({
         where: { ...whereCondition },
       });
 
       // Data found throw an error.
-      if (udEexpectedData) {
+      if (unEexpectedData) {
         // throw an exception
         throw new ValidationException([
           {
             field: 'phone',
-            message: 'Phone Number Already  Exists with another User.',
+            message: 'Phone Number Already Exists with another User.',
           },
         ]);
       }
 
       //update data
-      await this.adminUserRepository.update(
+      await this.userRepository.update(
         {
           id: id,
         },
         {
-          full_name: updateAdminUserDto.full_name,
-          phone: updateAdminUserDto.phone,
+          name: updateUserDto.name,
+          phone: updateUserDto.phone,
           updated_by: adminUser.id,
         },
       );
 
       // Updated row getting
-      const user = await this.adminUserRepository.findOne(id);
+      const user = await this.userRepository.findOne(id);
 
       //return updated row
       return user;
@@ -179,12 +176,12 @@ export class AdminUsersService {
 
   async status(
     id: string,
-    statusChangeAdminUserDto: StatusChangeAdminUserDto,
+    statusChangeUserDto: StatusChangeUserDto,
     adminUser: AdminUserDto,
   ) {
     try {
       // Find user
-      const expectedData = await this.adminUserRepository.findOne(id);
+      const expectedData = await this.userRepository.findOne(id);
 
       // user not found throw an error.
       if (!expectedData) {
@@ -192,18 +189,18 @@ export class AdminUsersService {
       }
 
       //update user Status
-      await this.adminUserRepository.update(
+      await this.userRepository.update(
         {
           id: id,
         },
         {
-          status: statusChangeAdminUserDto.status,
+          status: statusChangeUserDto.status,
           updated_by: adminUser.id,
         },
       );
 
       // Updated user Fetch
-      const user = await this.adminUserRepository.findOne(id);
+      const user = await this.userRepository.findOne(id);
 
       //return updated user
       return user;
@@ -215,7 +212,7 @@ export class AdminUsersService {
   async remove(id: string, adminUser: AdminUserDto) {
     try {
       // Find User
-      const expectedData = await this.adminUserRepository.findOne({ id: id });
+      const expectedData = await this.userRepository.findOne({ id: id });
 
       // User not found throw an error.
       if (!expectedData) {
@@ -224,7 +221,7 @@ export class AdminUsersService {
 
       await this.connection.transaction(async (manager) => {
         //Update Deleted By
-        await manager.getRepository<AdminUserEntity>('admin_users').update(
+        await manager.getRepository<UserEntity>('admin_users').update(
           {
             id: id,
           },
@@ -234,9 +231,7 @@ export class AdminUsersService {
         );
 
         //Soft Delete User
-        await manager
-          .getRepository<AdminUserEntity>('admin_users')
-          .softDelete(id);
+        await manager.getRepository<UserEntity>('admin_users').softDelete(id);
         return true;
       });
     } catch (error) {
@@ -247,7 +242,7 @@ export class AdminUsersService {
   async finalDelete(id: string) {
     try {
       // Find Admin User Data
-      const expectedData = await this.adminUserRepository.find({
+      const expectedData = await this.userRepository.find({
         where: { id },
         withDeleted: true,
       });
@@ -258,7 +253,7 @@ export class AdminUsersService {
       }
 
       //Delete data
-      await this.adminUserRepository.delete(id);
+      await this.userRepository.delete(id);
 
       //Return
       return true;

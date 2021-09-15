@@ -1,7 +1,7 @@
 import { HttpException, HttpStatus } from '@nestjs/common';
 
 export interface IValidationError {
-  field: string;
+  field?: string;
   message: string;
 }
 export class ValidationException extends HttpException {

@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import * as bcrypt from 'bcrypt';
-import { AdminUserEntity } from 'src/common/entities/admin/users/user.entity';
+import { UserEntity } from 'src/common/entities/user.entity';
 import { UserTypeEnum } from 'src/common/enums/admin/user-type.enum';
 import { CustomException } from 'src/common/exceptions/customException';
 import { ValidationException } from 'src/common/exceptions/validationException';
@@ -12,8 +12,8 @@ import { RegistrationDto } from '../dto/registrations.dto';
 @Injectable()
 export class RegistrationService {
   constructor(
-    @InjectRepository(AdminUserEntity)
-    private readonly adminUserRepository: Repository<AdminUserEntity>,
+    @InjectRepository(UserEntity)
+    private readonly adminUserRepository: Repository<UserEntity>,
     private connection: Connection,
     private mailService: MailService,
   ) {}
@@ -36,7 +36,7 @@ export class RegistrationService {
         ]);
       }
 
-      const user_type = UserTypeEnum.GENERAL_USER;
+      const user_type = UserTypeEnum.GENERAL_EMPLOYEE;
 
       //Data store
       const hashedPassword = await bcrypt.hash(password, 12);

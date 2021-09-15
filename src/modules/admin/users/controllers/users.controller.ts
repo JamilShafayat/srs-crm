@@ -26,12 +26,12 @@ import { PayloadResponseDTO } from 'src/common/dto/payload-response.dto';
 import { AuthGuard } from 'src/common/guard/admin/auth.guard';
 import { DtoValidationPipe } from 'src/common/pipes/dtoValidation.pipe';
 import { EntityManager, TransactionManager } from 'typeorm';
-import { AdminUserIdParamDto } from '../dto/admin-user-id-param.dto';
-import { AdminUserListDto } from '../dto/admin-user-list.dto';
-import { CreateAdminUserDto } from '../dto/create-user.dto';
-import { StatusChangeAdminUserDto } from '../dto/status-change-user.dto';
-import { UpdateAdminUserDto } from '../dto/update-user.dto';
-import { AdminUsersService } from '../services/users.service';
+import { CreateUserDto } from '../dto/create-user.dto';
+import { StatusChangeUserDto } from '../dto/status-change-user.dto';
+import { UpdateUserDto } from '../dto/update-user.dto';
+import { UserFilterListDto } from '../dto/user-filter-list.dto';
+import { UserIdParamDto } from '../dto/user-id-param.dto';
+import { UsersService } from '../services/users.service';
 
 @Controller('v1/admin/users')
 @ApiTags('Admin Users')
@@ -39,19 +39,16 @@ import { AdminUsersService } from '../services/users.service';
 @ApiBearerAuth('JWT')
 @ApiUnauthorizedResponse({ description: 'Invalid Credential' })
 export class UsersController {
-  constructor(private readonly adminUsersService: AdminUsersService) {}
+  constructor(private readonly usersService: UsersService) {}
 
   // Fetch All users
   @Get()
   @ApiResponse({ description: 'Get All Users', status: HttpStatus.OK })
   async findAll(
-    @Query() filter: AdminUserListDto,
+    @Query() filter: UserFilterListDto,
     @Pagination() pagination: PaginationDto,
   ) {
-    const [users, total] = await this.adminUsersService.findAll(
-      filter,
-      pagination,
-    );
+    const [users, total] = await this.usersService.findAll(filter, pagination);
     return new PayloadResponseDTO({
       statusCode: HttpStatus.OK,
       message: 'All users Fetched',
@@ -66,18 +63,15 @@ export class UsersController {
 
   // Insert Data
   @Post()
-  @ApiResponse({ description: 'Admin User Add', status: HttpStatus.OK })
-  @ApiBody({ type: CreateAdminUserDto })
+  @ApiResponse({ description: 'User Create', status: HttpStatus.OK })
+  @ApiBody({ type: CreateUserDto })
   async create(
     @AdminUser() adminUser: AdminUserDto,
-    @Body(new DtoValidationPipe()) createAdminUserDto: CreateAdminUserDto,
+    @Body(new DtoValidationPipe()) createUserDto: CreateUserDto,
     @TransactionManager() manager: EntityManager, //if needed transaction use @TransactionManager
   ) {
-    console.log(createAdminUserDto);
-    const user = await this.adminUsersService.create(
-      createAdminUserDto,
-      adminUser,
-    );
+    console.log(createUserDto);
+    const user = await this.usersService.create(createUserDto, adminUser);
     return new PayloadResponseDTO({
       statusCode: HttpStatus.OK,
       message: 'User Entry Successful',
@@ -89,7 +83,7 @@ export class UsersController {
   @Get('/list')
   @ApiResponse({ description: 'Get Only Active Users', status: HttpStatus.OK })
   async findAllList() {
-    const [user] = await this.adminUsersService.findAllList();
+    const [user] = await this.usersService.findAllList();
     return new PayloadResponseDTO({
       statusCode: HttpStatus.OK,
       message: 'All Active user Fetched',
@@ -100,8 +94,8 @@ export class UsersController {
   // Fetch Single Data
   @Get(':id')
   @ApiResponse({ description: 'Single User Fetched', status: HttpStatus.OK })
-  async findOne(@Param(new DtoValidationPipe()) params: AdminUserIdParamDto) {
-    const user = await this.adminUsersService.findOne(params.id);
+  async findOne(@Param(new DtoValidationPipe()) params: UserIdParamDto) {
+    const user = await this.usersService.findOne(params.id);
     return new PayloadResponseDTO({
       statusCode: HttpStatus.OK,
       message: 'Single user Fetched',
@@ -111,15 +105,15 @@ export class UsersController {
 
   // Update Data
   @Put(':id')
-  @ApiResponse({ description: 'Single User Fetched', status: HttpStatus.OK })
+  @ApiResponse({ description: 'Single User Updated', status: HttpStatus.OK })
   async update(
     @AdminUser() adminUser: AdminUserDto,
-    @Param(new DtoValidationPipe()) params: AdminUserIdParamDto,
-    @Body(new DtoValidationPipe()) updateAdminUserDto: UpdateAdminUserDto,
+    @Param(new DtoValidationPipe()) params: UserIdParamDto,
+    @Body(new DtoValidationPipe()) updateUserDto: UpdateUserDto,
   ) {
-    const user = await this.adminUsersService.update(
+    const user = await this.usersService.update(
       params.id,
-      updateAdminUserDto,
+      updateUserDto,
       adminUser,
     );
     return new PayloadResponseDTO({
@@ -137,18 +131,18 @@ export class UsersController {
   })
   async status(
     @AdminUser() adminUser: AdminUserDto,
-    @Param(new DtoValidationPipe()) params: AdminUserIdParamDto,
+    @Param(new DtoValidationPipe()) params: UserIdParamDto,
     @Body(new DtoValidationPipe())
-    statusChangeAdminUserDto: StatusChangeAdminUserDto,
+    statusChangeUserDto: StatusChangeUserDto,
   ) {
-    const user = await this.adminUsersService.status(
+    const user = await this.usersService.status(
       params.id,
-      statusChangeAdminUserDto,
+      statusChangeUserDto,
       adminUser,
     );
     return new PayloadResponseDTO({
       statusCode: HttpStatus.OK,
-      message: 'user Updated',
+      message: 'User Updated',
       data: { user },
     });
   }
@@ -158,25 +152,23 @@ export class UsersController {
   @ApiResponse({ description: 'Single User Deleted', status: HttpStatus.OK })
   async remove(
     @AdminUser() adminUser: AdminUserDto,
-    @Param(new DtoValidationPipe()) params: AdminUserIdParamDto,
+    @Param(new DtoValidationPipe()) params: UserIdParamDto,
   ) {
-    await this.adminUsersService.remove(params.id, adminUser);
+    await this.usersService.remove(params.id, adminUser);
     return new PayloadResponseDTO({
       statusCode: HttpStatus.OK,
-      message: 'Data Soft Deleted',
+      message: 'User Soft Deleted',
       data: {},
     });
   }
 
   // Hard Delete Single user
   @Delete('/:id/delete')
-  async finalDelete(
-    @Param(new DtoValidationPipe()) params: AdminUserIdParamDto,
-  ) {
-    await this.adminUsersService.finalDelete(params.id);
+  async finalDelete(@Param(new DtoValidationPipe()) params: UserIdParamDto) {
+    await this.usersService.finalDelete(params.id);
     return new PayloadResponseDTO({
       statusCode: HttpStatus.OK,
-      message: 'Data Completely Deleted',
+      message: 'User Completely Deleted',
       data: {},
     });
   }
