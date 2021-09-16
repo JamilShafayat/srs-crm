@@ -100,7 +100,7 @@ export class ProjectService {
 
 			const project = await this.projectRepository.findOne({
 				where: { id: createProject.id },
-				relations: ['team_info', 'client_info'],
+				relations: ['team_info', 'client_info', 'client_info.user_info'],
 			});
 
 			return project;

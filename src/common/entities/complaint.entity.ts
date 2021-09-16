@@ -1,4 +1,4 @@
-import { Column, Entity, JoinColumn, OneToMany, OneToOne } from 'typeorm';
+import { Column, Entity, JoinColumn, ManyToOne, OneToMany } from 'typeorm';
 import { ClientEntity } from './client.entity';
 import { CommentEntity } from './comment.entity';
 import { CommonEntity } from './common.entity';
@@ -18,17 +18,17 @@ export class ComplaintEntity extends CommonEntity {
 	@Column({ unique: false, nullable: false })
 	client_id: string;
 
-	@OneToOne(() => ClientEntity, (client: any) => client.complaints)
+	@ManyToOne(() => ClientEntity, (client: any) => client.complaints)
 	@JoinColumn({ name: 'client_id' })
 	client_info: ClientEntity;
 
 	@Column({ unique: false, nullable: false })
 	project_id: string;
 
-	@OneToOne(() => ProjectEntity, (project: any) => project)
+	@ManyToOne(() => ProjectEntity, (project: any) => project.complaints)
 	@JoinColumn({ name: 'project_id' })
 	project_info: ProjectEntity;
 
-	@OneToMany(() => CommentEntity, (comment: any) => comment)
+	@OneToMany(() => CommentEntity, (comment: any) => comment.complaint_info)
 	comments: CommentEntity[];
 }
