@@ -1,11 +1,10 @@
 {
 	"workbench.colorTheme": "Winter is Coming (Dark Blue)",
 	"workbench.iconTheme": "material-icon-theme",
-	// "workbench.iconTheme": "vscode-icons",
 	// editor
 	"editor.tabSize": 2,
 	"editor.fontSize": 14,
-	"editor.fontFamily": "Verdana",
+	// "editor.fontFamily": "Verdana",
 	"editor.insertSpaces": false,
 	"editor.detectIndentation": false,
 	"editor.suggestSelection": "first",

@@ -1,22 +1,22 @@
 import {
-  Body,
-  Controller,
-  Delete,
-  Get,
-  HttpStatus,
-  Param,
-  Patch,
-  Post,
-  Put,
-  Query,
-  UseGuards,
+	Body,
+	Controller,
+	Delete,
+	Get,
+	HttpStatus,
+	Param,
+	Patch,
+	Post,
+	Put,
+	Query,
+	UseGuards
 } from '@nestjs/common';
 import {
-  ApiBearerAuth,
-  ApiBody,
-  ApiResponse,
-  ApiTags,
-  ApiUnauthorizedResponse,
+	ApiBearerAuth,
+	ApiBody,
+	ApiResponse,
+	ApiTags,
+	ApiUnauthorizedResponse
 } from '@nestjs/swagger';
 import { AdminUser } from 'src/common/decorators/Admin/admin-user.decorator';
 import { Pagination } from 'src/common/decorators/pagination.decorator';
@@ -39,152 +39,180 @@ import { CommentService } from '../services/comment.service';
 @ApiBearerAuth('JWT')
 @ApiUnauthorizedResponse({ description: 'Invalid Credential' })
 export class CommentController {
-  constructor(private readonly commentService: CommentService) {}
+	constructor(private readonly commentService: CommentService) { }
 
-  // Fetch all comment
-  @Get()
-  @ApiResponse({ description: 'Get All Comments', status: HttpStatus.OK })
-  async findAll(
-    @Query() filter: CommentFilterListDto,
-    @Pagination() pagination: PaginationDto,
-  ) {
-    const [comments, total] = await this.commentService.findAll(
-      filter,
-      pagination,
-    );
-    return new PayloadResponseDTO({
-      statusCode: HttpStatus.OK,
-      message: 'All Comment Fetched',
-      metadata: {
-        page: pagination.page,
-        totalCount: total,
-        limit: pagination.limit,
-      },
-      data: { comments },
-    });
-  }
+	/*
+		fetch all comments
+		return an array of objects
+	*/
+	@Get()
+	@ApiResponse({ description: 'Get all comments', status: HttpStatus.OK })
+	async findAll(
+		@Query() filter: CommentFilterListDto,
+		@Pagination() pagination: PaginationDto,
+	) {
+		const [comments, total] = await this.commentService.findAll(
+			filter,
+			pagination,
+		);
+		return new PayloadResponseDTO({
+			statusCode: HttpStatus.OK,
+			message: 'All comment fetched successfully',
+			metadata: {
+				page: pagination.page,
+				totalCount: total,
+				limit: pagination.limit,
+			},
+			data: { comments },
+		});
+	}
 
-  // Insert comment data
-  @Post()
-  @ApiResponse({ description: 'Comment Create', status: HttpStatus.OK })
-  @ApiBody({ type: CreateCommentDto })
-  async create(
-    @AdminUser() user: AdminUserDto,
-    @Body(new DtoValidationPipe())
-    createCommentDto: CreateCommentDto,
-    @TransactionManager() manager: EntityManager,
-  ) {
-    const comment = await this.commentService.create(createCommentDto, user);
-    return new PayloadResponseDTO({
-      statusCode: HttpStatus.CREATED,
-      message: 'Comment Created Successfully',
-      data: { comment },
-    });
-  }
+	/*
+		create new comment
+		return single object
+	*/
+	@Post()
+	@ApiResponse({ description: 'Create new comment', status: HttpStatus.OK })
+	@ApiBody({ type: CreateCommentDto })
+	async create(
+		@AdminUser() user: AdminUserDto,
+		@Body(new DtoValidationPipe())
+		createCommentDto: CreateCommentDto,
+		@TransactionManager() manager: EntityManager,
+	) {
+		const comment = await this.commentService.create(createCommentDto, user);
+		return new PayloadResponseDTO({
+			statusCode: HttpStatus.CREATED,
+			message: 'Comment created successfully',
+			data: { comment },
+		});
+	}
 
-  // Fetch only active comment
-  @Get('/list')
-  @ApiResponse({
-    description: 'Get Only Active comment',
-    status: HttpStatus.OK,
-  })
-  async findAllList() {
-    const [comments] = await this.commentService.findAllList();
-    return new PayloadResponseDTO({
-      statusCode: HttpStatus.OK,
-      message: 'All Active Comment Fetched',
-      data: { comments },
-    });
-  }
+	/*
+		fetch all active comment
+		return an array of objects
+	*/
+	@Get('/list')
+	@ApiResponse({
+		description: 'Get only active comment',
+		status: HttpStatus.OK,
+	})
+	async findAllList() {
+		const [comments] = await this.commentService.findAllList();
+		return new PayloadResponseDTO({
+			statusCode: HttpStatus.OK,
+			message: 'All active comment fetched successfully',
+			data: { comments },
+		});
+	}
 
-  // Fetch single comment
-  @Get(':id')
-  @ApiResponse({
-    description: 'Single Comment Fetched',
-    status: HttpStatus.OK,
-  })
-  async findOne(@Param(new DtoValidationPipe()) params: CommentIdParamDto) {
-    const comment = await this.commentService.findOne(params.id);
-    return new PayloadResponseDTO({
-      statusCode: HttpStatus.OK,
-      message: 'Single Comment Fetched',
-      data: { comment },
-    });
-  }
+	/*
+		fetch single comment
+		return single object
+	*/
+	@Get(':id')
+	@ApiResponse({
+		description: 'Single comment fetched',
+		status: HttpStatus.OK,
+	})
+	async findOne(@Param(new DtoValidationPipe()) params: CommentIdParamDto) {
+		const comment = await this.commentService.findOne(params.id);
+		return new PayloadResponseDTO({
+			statusCode: HttpStatus.OK,
+			message: 'Single comment fetched successfully',
+			data: { comment },
+		});
+	}
 
-  // Update comment data
-  @Put(':id')
-  @ApiResponse({
-    description: 'Single Comment Updated',
-    status: HttpStatus.OK,
-  })
-  async update(
-    @AdminUser() user: AdminUserDto,
-    @Param(new DtoValidationPipe()) params: CommentIdParamDto,
-    @Body(new DtoValidationPipe()) updateCommentDto: UpdateCommentDto,
-  ) {
-    const comment = await this.commentService.update(
-      params.id,
-      updateCommentDto,
-      user,
-    );
-    return new PayloadResponseDTO({
-      statusCode: HttpStatus.OK,
-      message: 'Comment Updated Successfully',
-      data: { comment },
-    });
-  }
+	/*
+		update single comment
+		return single object
+	*/
+	@Put(':id')
+	@ApiResponse({
+		description: 'Single comment updated',
+		status: HttpStatus.OK,
+	})
+	async update(
+		@AdminUser() user: AdminUserDto,
+		@Param(new DtoValidationPipe()) params: CommentIdParamDto,
+		@Body(new DtoValidationPipe()) updateCommentDto: UpdateCommentDto,
+	) {
+		const comment = await this.commentService.update(
+			params.id,
+			updateCommentDto,
+			user,
+		);
+		return new PayloadResponseDTO({
+			statusCode: HttpStatus.OK,
+			message: 'Comment updated successfully',
+			data: { comment },
+		});
+	}
 
-  // Update comment status
-  @Patch(':id/status')
-  @ApiResponse({
-    description: 'Single Comment Status Changed',
-    status: HttpStatus.OK,
-  })
-  async status(
-    @AdminUser() user: AdminUserDto,
-    @Param(new DtoValidationPipe()) params: CommentIdParamDto,
-    @Body(new DtoValidationPipe())
-    statusChangeCommentDto: StatusChangeCommentDto,
-  ) {
-    const comment = await this.commentService.status(
-      params.id,
-      statusChangeCommentDto,
-      user,
-    );
-    return new PayloadResponseDTO({
-      statusCode: HttpStatus.OK,
-      message: 'Comment Status Updated Successfully',
-      data: { comment },
-    });
-  }
+	/*
+		update comment status
+		return single object
+	*/
+	@Patch(':id/status')
+	@ApiResponse({
+		description: 'Single comment status changed',
+		status: HttpStatus.OK,
+	})
+	async status(
+		@AdminUser() user: AdminUserDto,
+		@Param(new DtoValidationPipe()) params: CommentIdParamDto,
+		@Body(new DtoValidationPipe())
+		statusChangeCommentDto: StatusChangeCommentDto,
+	) {
+		const comment = await this.commentService.status(
+			params.id,
+			statusChangeCommentDto,
+			user,
+		);
+		return new PayloadResponseDTO({
+			statusCode: HttpStatus.OK,
+			message: 'Comment status updated successfully',
+			data: { comment },
+		});
+	}
 
-  // Soft delete single comment
-  @Delete(':id')
-  @ApiResponse({
-    description: 'Single Comment Deleted',
-    status: HttpStatus.OK,
-  })
-  async remove(
-    @AdminUser() user: AdminUserDto,
-    @Param(new DtoValidationPipe()) params: CommentIdParamDto,
-  ) {
-    await this.commentService.remove(params.id, user);
-    return new PayloadResponseDTO({
-      statusCode: HttpStatus.OK,
-      message: 'Comment Soft Deleted',
-      data: {},
-    });
-  }
+	/*
+		delete single comment - soft delete
+		return null
+	*/
+	@Delete(':id')
+	@ApiResponse({
+		description: 'Single comment deleted',
+		status: HttpStatus.OK,
+	})
+	async remove(
+		@AdminUser() user: AdminUserDto,
+		@Param(new DtoValidationPipe()) params: CommentIdParamDto,
+	) {
+		await this.commentService.remove(params.id, user);
+		return new PayloadResponseDTO({
+			statusCode: HttpStatus.OK,
+			message: 'Comment soft deleted',
+			data: {},
+		});
+	}
 
-  // Hard delete single comment
-  @Delete('/:id/delete')
-  async finalDelete(@Param(new DtoValidationPipe()) params: CommentIdParamDto) {
-    await this.commentService.finalDelete(params.id);
-    return new PayloadResponseDTO({
-      statusCode: HttpStatus.OK,
-      message: 'Comment Completely Deleted',
-      data: {},
-    });
-  }
+	/*
+		delete single comment - hard/permanent delete
+		return null
+	*/
+	@Delete('/:id/delete')
+	@ApiResponse({
+		description: 'Single comment deleted permanently',
+		status: HttpStatus.OK,
+	})
+	async finalDelete(@Param(new DtoValidationPipe()) params: CommentIdParamDto) {
+		await this.commentService.finalDelete(params.id);
+		return new PayloadResponseDTO({
+			statusCode: HttpStatus.OK,
+			message: 'Comment completely deleted',
+			data: {},
+		});
+	}
 }

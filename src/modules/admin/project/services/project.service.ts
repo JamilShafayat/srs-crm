@@ -131,7 +131,7 @@ export class ProjectService {
 			});
 
 			if (!project) {
-				throw new NotFoundException('No Project Found!');
+				throw new NotFoundException('No project found on this id!');
 			}
 			return project;
 		} catch (error) {

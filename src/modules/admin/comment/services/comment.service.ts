@@ -3,6 +3,8 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { AdminUserDto } from 'src/common/dto/admin-user.dto';
 import { PaginationDto } from 'src/common/dto/Pagination.dto';
 import { CommentEntity } from 'src/common/entities/comment.entity';
+import { ComplaintEntity } from 'src/common/entities/complaint.entity';
+import { UserEntity } from 'src/common/entities/user.entity';
 import { CustomException } from 'src/common/exceptions/customException';
 import { Connection, Equal, Repository } from 'typeorm';
 import { CommentFilterListDto } from '../dto/comment-filter-list.dto';
@@ -12,222 +14,232 @@ import { UpdateCommentDto } from '../dto/update-comment.dto';
 
 @Injectable()
 export class CommentService {
-  constructor(
-    @InjectRepository(CommentEntity)
-    private readonly commentRepository: Repository<CommentEntity>,
-    private connection: Connection,
-  ) {}
+	constructor(
+		@InjectRepository(UserEntity)
+		private readonly userRepository: Repository<UserEntity>,
+		@InjectRepository(ComplaintEntity)
+		private readonly complaintRepository: Repository<ComplaintEntity>,
+		@InjectRepository(CommentEntity)
+		private readonly commentRepository: Repository<CommentEntity>,
+		private connection: Connection,
+	) { }
 
-  async findAll(
-    filter: CommentFilterListDto,
-    pagination: PaginationDto,
-  ): Promise<[CommentEntity[], number]> {
-    try {
-      const whereCondition = {};
+	async findAll(
+		filter: CommentFilterListDto,
+		pagination: PaginationDto,
+	): Promise<[CommentEntity[], number]> {
+		try {
+			const whereCondition = {};
 
-      //status filter
-      if (filter.status) {
-        whereCondition['status'] = Equal(filter.status);
-      }
+			//status filter
+			if (filter.status) {
+				whereCondition['status'] = Equal(filter.status);
+			}
 
-      //state filter
-      // if (filter.phone) {
-      //   whereCondition['phone'] = Equal(filter.phone);
-      // }
+			//find comments
+			const comments = await this.commentRepository.find({
+				where: {
+					...whereCondition,
+				},
+				order: { created_by: 'DESC' },
+				skip: pagination.skip,
+				take: pagination.limit,
+				relations: ['user_info', 'complaint_info'],
+			});
 
-      //find comments
-      const comments = await this.commentRepository.find({
-        where: {
-          ...whereCondition,
-        },
-        order: { created_by: 'DESC' },
-        skip: pagination.skip,
-        take: pagination.limit,
-        relations: ['user_info', 'complaint_info'],
-      });
+			const total = await this.commentRepository.count({
+				where: { ...whereCondition },
+			});
 
-      //count total comments
-      const total = await this.commentRepository.count({
-        where: { ...whereCondition },
-      });
+			return [comments, total];
+		} catch (error) {
+			throw new CustomException(error);
+		}
+	}
 
-      // Return Fetched Data
-      return [comments, total];
-    } catch (error) {
-      throw new CustomException(error);
-    }
-  }
+	async create(createCommentDto: CreateCommentDto, user: AdminUserDto) {
+		try {
+			const { body, user_id, complaint_id } = createCommentDto;
 
-  async create(createCommentDto: CreateCommentDto, user: AdminUserDto) {
-    try {
-      const { body, user_id, complaint_id } = createCommentDto;
+			// find user
+			const findUser = await this.userRepository.findOne({
+				where: { id: user_id },
+			});
 
-      //data store
-      const data = {
-        body,
-        user_id,
-        complaint_id,
-        created_by: user.id,
-      };
+			if (!findUser) {
+				throw new NotFoundException('No user found on this id!');
+			}
 
-      const addedCommentData = await this.commentRepository.save(data);
+			// find complaint
+			const findComplaint = await this.complaintRepository.findOne({
+				where: { id: complaint_id },
+			});
 
-      // Created data return
-      return addedCommentData;
-    } catch (error) {
-      throw new CustomException(error);
-    }
-  }
+			if (!findComplaint) {
+				throw new NotFoundException('No complaint found on this id!');
+			}
 
-  async findAllList() {
-    try {
-      // All Active Data Fetch
-      const expectedData = await this.commentRepository.findAndCount({
-        status: 1,
-      });
+			const newComment = {
+				body,
+				user_id,
+				complaint_id,
+				created_by: user.id,
+			};
 
-      // Return Fetched Data
-      return expectedData;
-    } catch (error) {
-      throw new CustomException(error);
-    }
-  }
+			const createComment = await this.commentRepository.save(newComment);
 
-  async findOne(id: string): Promise<CommentEntity> {
-    try {
-      // single comment fetch
-      const expectedData = await this.commentRepository.findOne({
-        where: { id },
-        relations: ['user_info', 'complaint_info'],
-      });
+			const comment = await this.commentRepository.findOne({
+				where: { id: createComment.id },
+				relations: ['user_info', 'complaint_info'],
+			});
 
-      // comment not found throw an error.
-      if (!expectedData) {
-        throw new NotFoundException('No Comment Found!');
-      }
-      return expectedData;
-    } catch (error) {
-      throw new CustomException(error);
-    }
-  }
+			return comment;
+		} catch (error) {
+			throw new CustomException(error);
+		}
+	}
 
-  async update(
-    id: string,
-    updateCommentDto: UpdateCommentDto,
-    user: AdminUserDto,
-  ) {
-    try {
-      //update data
-      await this.commentRepository.update(
-        {
-          id: id,
-        },
-        {
-          body: updateCommentDto.body,
-          user_id: updateCommentDto.user_id,
-          complaint_id: updateCommentDto.complaint_id,
-          updated_by: user.id,
-        },
-      );
+	async findAllList() {
+		try {
+			// find all active comments
+			const comments = await this.commentRepository.findAndCount({
+				status: 1,
+			});
 
-      // Updated row getting
-      const comment = await this.commentRepository.findOne({
-        where: { id },
-        relations: ['user_info', 'complaint_info'],
-      });
+			return comments;
+		} catch (error) {
+			throw new CustomException(error);
+		}
+	}
 
-      //return updated row
-      return comment;
-    } catch (error) {
-      throw new CustomException(error);
-    }
-  }
+	async findOne(id: string): Promise<CommentEntity> {
+		try {
+			// find single comment
+			const comment = await this.commentRepository.findOne({
+				where: { id },
+				relations: ['user_info', 'complaint_info'],
+			});
 
-  async status(
-    id: string,
-    statusChangeCommentDto: StatusChangeCommentDto,
-    user: AdminUserDto,
-  ) {
-    try {
-      // Find comment
-      const expectedData = await this.commentRepository.findOne(id);
+			if (!comment) {
+				throw new NotFoundException('No comment found on this id!');
+			}
+			return comment;
+		} catch (error) {
+			throw new CustomException(error);
+		}
+	}
 
-      // comment not found throw an error.
-      if (!expectedData) {
-        throw new NotFoundException('No Comment Found!');
-      }
+	async update(
+		id: string,
+		updateCommentDto: UpdateCommentDto,
+		user: AdminUserDto,
+	) {
+		try {
+			// find comment
+			const findComment = await this.commentRepository.findOne(id);
 
-      //update comment status
-      await this.commentRepository.update(
-        {
-          id: id,
-        },
-        {
-          status: statusChangeCommentDto.status,
-          updated_by: user.id,
-        },
-      );
+			if (!findComment) {
+				throw new NotFoundException('No comment found on this id!');
+			}
 
-      // Updated comment fetch
-      const comment = await this.commentRepository.findOne(id);
+			await this.commentRepository.update(
+				{
+					id: id,
+				},
+				{
+					body: updateCommentDto.body,
+					user_id: updateCommentDto.user_id,
+					complaint_id: updateCommentDto.complaint_id,
+					updated_by: user.id,
+				},
+			);
 
-      //return updated comment
-      return comment;
-    } catch (error) {
-      throw new CustomException(error);
-    }
-  }
+			const comment = await this.commentRepository.findOne({
+				where: { id },
+				relations: ['user_info', 'complaint_info'],
+			});
 
-  async remove(id: string, user: AdminUserDto) {
-    try {
-      // Find comment
-      const expectedData = await this.commentRepository.findOne({ id: id });
+			return comment;
+		} catch (error) {
+			throw new CustomException(error);
+		}
+	}
 
-      // comment not found throw an error.
-      if (!expectedData) {
-        throw new NotFoundException('No Comment Found!');
-      }
+	async status(
+		id: string,
+		statusChangeCommentDto: StatusChangeCommentDto,
+		user: AdminUserDto,
+	) {
+		try {
+			// find comment
+			const findComment = await this.commentRepository.findOne(id);
 
-      await this.connection.transaction(async (manager) => {
-        //Update Deleted By
-        await manager.getRepository<CommentEntity>('comments').update(
-          {
-            id: id,
-          },
-          {
-            deleted_by: user.id,
-          },
-        );
+			if (!findComment) {
+				throw new NotFoundException('No Comment Found!');
+			}
 
-        //Soft delete comment
-        await manager.getRepository<CommentEntity>('comments').softDelete(id);
-        return true;
-      });
-    } catch (error) {
-      throw new CustomException(error);
-    }
-  }
+			await this.commentRepository.update(
+				{
+					id: id,
+				},
+				{
+					status: statusChangeCommentDto.status,
+					updated_by: user.id,
+				},
+			);
 
-  async finalDelete(id: string) {
-    try {
-      // Find comment
-      const expectedData = await this.commentRepository.find({
-        where: { id },
-        withDeleted: true,
-      });
+			const comment = await this.commentRepository.findOne(id);
 
-      // Data not found throw an error.
-      if (!expectedData) {
-        throw new NotFoundException('No Comment Found!');
-      }
+			return comment;
+		} catch (error) {
+			throw new CustomException(error);
+		}
+	}
 
-      //Delete data
-      await this.commentRepository.delete(id);
+	async remove(id: string, user: AdminUserDto) {
+		try {
+			// find comment
+			const comment = await this.commentRepository.findOne({ id: id });
 
-      //Return
-      return true;
-    } catch (error) {
-      throw new CustomException(error);
-    }
-  }
+			if (!comment) {
+				throw new NotFoundException('No Comment Found!');
+			}
+
+			await this.connection.transaction(async (manager) => {
+				await manager.getRepository<CommentEntity>('comments').update(
+					{
+						id: id,
+					},
+					{
+						deleted_by: user.id,
+					},
+				);
+
+				await manager.getRepository<CommentEntity>('comments').softDelete(id);
+				return true;
+			});
+		} catch (error) {
+			throw new CustomException(error);
+		}
+	}
+
+	async finalDelete(id: string) {
+		try {
+			// find comment
+			const comment = await this.commentRepository.find({
+				where: { id },
+				withDeleted: true,
+			});
+
+			if (!comment) {
+				throw new NotFoundException('No Comment Found!');
+			}
+
+			await this.commentRepository.delete(id);
+
+			return true;
+		} catch (error) {
+			throw new CustomException(error);
+		}
+	}
 }
