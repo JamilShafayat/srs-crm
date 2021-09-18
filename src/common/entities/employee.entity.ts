@@ -26,6 +26,6 @@ export class EmployeeEntity extends CommonEntity {
 	@JoinColumn({ name: 'designation_id' })
 	designation_info: DesignationEntity;
 
-	@OneToMany(() => TeamEmployeeEntity, (teamEmployee: any) => teamEmployee)
+	@OneToMany(() => TeamEmployeeEntity, (teamEmployee: any) => teamEmployee.team_info)
 	team_employees: TeamEmployeeEntity[];
 }

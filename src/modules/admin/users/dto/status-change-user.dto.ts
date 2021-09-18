@@ -5,9 +5,9 @@ import { StatusTypeEnum } from '../../../../common/enums/status/status.enum';
 export class StatusChangeUserDto {
   @ApiProperty({
     type: Number,
-    description: 'User Status',
+    description: 'User status',
     default: StatusTypeEnum.ACTIVE,
   })
-  @IsEnum(StatusTypeEnum, { message: 'Status Should be 0 or 1' })
+  @IsEnum(StatusTypeEnum, { message: 'Status should be 0 or 1' })
   status: number;
 }

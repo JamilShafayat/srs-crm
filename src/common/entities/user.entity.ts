@@ -28,7 +28,7 @@ export class UserEntity extends CommonEntity {
 	})
 	user_type: string;
 
-	@OneToOne(() => ClientEntity, (client) => client)
+	@OneToOne(() => ClientEntity, (client) => client.user_info)
 	client_info: ClientEntity;
 
 	@OneToOne(() => EmployeeEntity, (employee) => employee)

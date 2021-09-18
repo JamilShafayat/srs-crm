@@ -12,7 +12,7 @@ export class UserFilterListDto extends PaginationBaseDTO {
 
   @ApiProperty({
     type: String,
-    description: 'Mobile Number',
+    description: 'Mobile number',
     default: '',
     required: false,
   })

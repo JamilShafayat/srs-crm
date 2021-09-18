@@ -12,7 +12,7 @@ import { UserTypeEnum } from './../../../../common/enums/admin/user-type.enum';
 export class UpdateUserDto {
   @ApiProperty({
     type: String,
-    description: 'User Full Name',
+    description: 'User full name',
     default: 'Mr. Name',
   })
   @IsString()
@@ -22,7 +22,7 @@ export class UpdateUserDto {
 
   @ApiProperty({
     type: String,
-    description: 'Mobile Number',
+    description: 'Mobile number',
     default: '01971033730',
   })
   @IsString()
@@ -32,7 +32,7 @@ export class UpdateUserDto {
 
   @ApiProperty({
     type: String,
-    description: 'User Email',
+    description: 'User email',
     default: 'email@gmail.com',
   })
   @MinLength(10)
@@ -43,9 +43,9 @@ export class UpdateUserDto {
 
   @ApiProperty({
     type: String,
-    description: 'User Type',
+    description: 'User type',
     default: UserTypeEnum.SUPER_ADMIN,
   })
-  @IsEnum(UserTypeEnum, { message: 'User Type' })
+  @IsEnum(UserTypeEnum, { message: 'User type' })
   user_type: string;
 }

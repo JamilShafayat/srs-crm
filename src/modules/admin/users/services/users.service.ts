@@ -187,7 +187,6 @@ export class UsersService {
 
 			const user = await this.userRepository.findOne(id);
 
-			//return updated user
 			return user;
 		} catch (error) {
 			throw new CustomException(error);
@@ -196,16 +195,14 @@ export class UsersService {
 
 	async remove(id: string, adminUser: AdminUserDto) {
 		try {
-			// Find User
+			// find User
 			const user = await this.userRepository.findOne({ id: id });
 
-			// User not found throw an error.
 			if (!user) {
 				throw new NotFoundException('No User Found!');
 			}
 
 			await this.connection.transaction(async (manager) => {
-				//Update Deleted By
 				await manager.getRepository<UserEntity>('admin_users').update(
 					{
 						id: id,
@@ -215,7 +212,6 @@ export class UsersService {
 					},
 				);
 
-				//Soft Delete User
 				await manager.getRepository<UserEntity>('admin_users').softDelete(id);
 				return true;
 			});
@@ -226,21 +222,18 @@ export class UsersService {
 
 	async finalDelete(id: string) {
 		try {
-			// Find Admin User Data
+			// find user
 			const user = await this.userRepository.find({
 				where: { id },
 				withDeleted: true,
 			});
 
-			// Data not found throw an error.
 			if (!user) {
 				throw new NotFoundException('No user found on this id!');
 			}
 
-			//Delete data
 			await this.userRepository.delete(id);
 
-			//Return
 			return true;
 		} catch (error) {
 			throw new CustomException(error);
