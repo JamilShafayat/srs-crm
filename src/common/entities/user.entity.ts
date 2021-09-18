@@ -31,9 +31,9 @@ export class UserEntity extends CommonEntity {
 	@OneToOne(() => ClientEntity, (client) => client)
 	client_info: ClientEntity;
 
-	@OneToMany(() => CommentEntity, (comment) => comment.user_info)
-	comments: CommentEntity[];
-
 	@OneToOne(() => EmployeeEntity, (employee) => employee)
 	employee_info: EmployeeEntity;
+
+	@OneToMany(() => CommentEntity, (comment) => comment.user_info)
+	comments: CommentEntity[];
 }

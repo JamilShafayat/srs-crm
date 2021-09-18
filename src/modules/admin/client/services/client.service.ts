@@ -67,7 +67,7 @@ export class ClientService {
 				full_name,
 			});
 
-			//find existing user
+			// find existing user
 			if (checkUserName || checkUserPhoneNumber) {
 				throw new ValidationException([
 					{
