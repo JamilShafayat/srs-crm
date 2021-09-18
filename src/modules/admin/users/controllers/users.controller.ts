@@ -69,7 +69,7 @@ export class UsersController {
 		return single object
 	*/
 	@Post()
-	@ApiResponse({ description: 'Create new user', status: HttpStatus.OK })
+	@ApiResponse({ description: 'Create new user', status: HttpStatus.CREATED })
 	@ApiBody({ type: CreateUserDto })
 	async create(
 		@AdminUser() adminUser: AdminUserDto,
@@ -78,7 +78,7 @@ export class UsersController {
 	) {
 		const user = await this.usersService.create(createUserDto, adminUser);
 		return new PayloadResponseDTO({
-			statusCode: HttpStatus.OK,
+			statusCode: HttpStatus.CREATED,
 			message: 'User created Successfully',
 			data: { user },
 		});
