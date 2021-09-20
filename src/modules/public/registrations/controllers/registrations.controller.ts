@@ -9,22 +9,21 @@ import { RegistrationService } from '../services/registrations.service';
 @Controller('v1/public/registrations')
 @ApiTags('User Registration')
 export class RegistrationsController {
-  constructor(private readonly registrationService: RegistrationService) {}
+	constructor(private readonly registrationService: RegistrationService) { }
 
-  // Insert Data
-  @Post()
-  @ApiResponse({ description: 'User Registration', status: HttpStatus.OK })
-  @ApiBody({ type: RegistrationDto })
-  async create(
-    @Body(new DtoValidationPipe()) registrationDto: RegistrationDto,
-    @TransactionManager() manager: EntityManager, //if needed transaction use @TransactionManager
-  ) {
-    const user = await this.registrationService.create(registrationDto);
+	@Post()
+	@ApiResponse({ description: 'User registration', status: HttpStatus.OK })
+	@ApiBody({ type: RegistrationDto })
+	async create(
+		@Body(new DtoValidationPipe()) registrationDto: RegistrationDto,
+		@TransactionManager() manager: EntityManager,
+	) {
+		const user = await this.registrationService.create(registrationDto);
 
-    return new PayloadResponseDTO({
-      statusCode: HttpStatus.OK,
-      message: 'Registrated Successfull',
-      data: { user },
-    });
-  }
+		return new PayloadResponseDTO({
+			statusCode: HttpStatus.OK,
+			message: 'User registered successfully',
+			data: { user },
+		});
+	}
 }

@@ -4,8 +4,9 @@ import { FileUploadEntity } from 'src/common/entities/shared/files-upload.entity
 import { FileUploadController } from './controller/file-upload.controller';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([FileUploadEntity])],
-  controllers: [FileUploadController],
-  providers: [],
+	imports: [TypeOrmModule.forFeature([FileUploadEntity])],
+	controllers: [FileUploadController],
+	providers: [],
 })
-export class FileUploadModule {}
+
+export class FileUploadModule { }
