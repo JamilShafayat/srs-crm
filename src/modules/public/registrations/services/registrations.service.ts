@@ -71,7 +71,12 @@ export class RegistrationService {
 				user_id: createUser.id,
 			};
 
-			const client = await this.clientRepository.save(newClient);
+			const createClient = await this.clientRepository.save(newClient);
+
+			const client = await this.clientRepository.findOne({
+				where: { id: createClient.id },
+				relations: ['user_info'],
+			});
 
 			// send confirmation mail
 			const token = Math.floor(1000 + Math.random() * 9000).toString();
