@@ -78,7 +78,7 @@ export class ClientService {
 				]);
 			}
 
-			//find existing client
+			// find existing client
 			if (checkClientFullName) {
 				throw new ValidationException([
 					{
