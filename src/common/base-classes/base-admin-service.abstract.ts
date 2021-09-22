@@ -4,29 +4,29 @@ import { PaginationDto } from '../dto/Pagination.dto';
 
 /**
  * @description Base Service
- * @author Jamil Shafayat
+ * @author xoss point
  * @version 0.0.2
  * @since 0.0.2
  */
-export default abstract class BaseAdminService<T extends BaseDTO, S = any, V = any> {
-  abstract findAll(page: PaginationDto, search: S): Promise<[number, T[]]>;
-  abstract findMany(page: PaginationDto, search: S): Promise<[number, T[]]>;
-  abstract findOne(search: S): Promise<T>;
+export default abstract class BaseAdminService<T extends BaseDTO, Search = any, Value = any> {
+  abstract findAll(page: PaginationDto, search: Search): Promise<[number, T[]]>;
+  abstract findMany(page: PaginationDto, search: Search): Promise<[number, T[]]>;
+  abstract findOne(search: Search): Promise<T>;
   abstract findById(id: number): Promise<T>;
-
   abstract create(createObj: T): Promise<T>;
-  abstract update(search: S, updateObj: T): Promise<T>;
-  abstract delete(search: S): Promise<V>;
+  abstract update(search: Search, updateObj: T): Promise<T>;
+  abstract delete(search: Search): Promise<Value>;
 
   entityToDTO<E extends BaseEntity>(entity: E): Promise<T> {
     return Promise.resolve(<T>(<unknown>entity));
   }
 
   entityToDTOs<E extends BaseEntity>(entities: E[]): Promise<T[]> {
-    const dtos = [];
+    const dto = [];
     for (const entity of entities) {
-      dtos.push(<T>(<unknown>entity));
+      dto.push(<T>(<unknown>entity));
     }
-    return Promise.resolve(dtos);
+
+    return Promise.resolve(dto);
   }
 }

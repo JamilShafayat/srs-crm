@@ -1,6 +1,6 @@
 /**
  * @description base DTO
- * @author Jamil Shafayat
+ * @author xoss point
  * @version 0.0.2
  * @since 0.0.2
  */

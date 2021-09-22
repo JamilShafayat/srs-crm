@@ -15,7 +15,6 @@ export class TeamEmployeeEntity extends CommonEntity {
 	@Column({ unique: false, nullable: false })
 	team_id: string;
 
-
 	@ManyToOne(() => TeamEntity, (team: any) => team.team_employees)
 	@JoinColumn({ name: 'team_id' })
 	team_info: TeamEntity;
