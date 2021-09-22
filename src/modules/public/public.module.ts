@@ -3,6 +3,7 @@ import { RegistrationsModule } from './registrations/registrations.module';
 
 export const PublicModuleList = [RegistrationsModule];
 @Module({
-  imports: PublicModuleList,
+	imports: PublicModuleList,
 })
-export class PublicModule {}
+
+export class PublicModule { }

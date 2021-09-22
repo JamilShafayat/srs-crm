@@ -105,5 +105,6 @@
 	},
 	"workbench.editor.enablePreview": false,
 	"git.autofetch": true,
-	"files.autoSave": "afterDelay"
+	"files.autoSave": "afterDelay",
+	"cSpell.words": ["xoss"]
 }

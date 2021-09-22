@@ -8,10 +8,7 @@ import { MailService } from './mail.service';
 @Module({
   imports: [
     MailerModule.forRootAsync({
-      // imports: [ConfigModule], // import module if not enabled globally
       useFactory: async (config: ConfigService) => ({
-        // transport: config.get("MAIL_TRANSPORT"),
-        // or
         transport: {
           host: config.get('MAIL_HOST'),
           secure: false,

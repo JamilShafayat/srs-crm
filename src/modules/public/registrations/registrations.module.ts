@@ -11,4 +11,5 @@ import { RegistrationService } from './services/registrations.service';
   controllers: [RegistrationsController],
   providers: [RegistrationService],
 })
+
 export class RegistrationsModule {}

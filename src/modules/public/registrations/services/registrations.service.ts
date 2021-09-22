@@ -36,8 +36,7 @@ export class RegistrationService {
 				throw new ValidationException([
 					{
 						field: checkUserName ? 'name' : 'phone',
-						message:
-							'This user name or phone number is already exists in the system.',
+						message: 'This user name or phone number is already exists in the system.',
 					},
 				]);
 			}

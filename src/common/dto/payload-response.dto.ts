@@ -4,7 +4,6 @@ export class IMetadata {
   public readonly totalPage?: number;
   public readonly limit: number;
 }
-
 export class MetadataDTO extends IMetadata {
   constructor(
     public readonly page: number,
@@ -39,6 +38,7 @@ export class PayloadResponseDTO {
       totalCount: 1,
       limit: 1,
     };
+		
     const totalPage = Math.ceil(metadata.totalCount / metadata.limit);
 
     this.statusCode = response.statusCode;

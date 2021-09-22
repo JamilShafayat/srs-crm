@@ -29,4 +29,5 @@ export const AdminModuleList = [
 @Module({
   imports: AdminModuleList,
 })
+
 export class AdminModule {}

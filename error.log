@@ -1,0 +1,1 @@
+::1	[2021-09-22T05:23:02.252Z] "GET /	-/-"	404 0ms reqBody: {} 	queryBody: {} 	{"statusCode":404,"message":"Cannot GET /","error":"Not Found"}

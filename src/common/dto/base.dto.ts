@@ -1,6 +1,6 @@
 /**
  * @description base DTO
- * @author Md Shah Alam Shamim
+ * @author Jamil Shafayat
  * @version 0.0.2
  * @since 0.0.2
  */

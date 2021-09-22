@@ -4,15 +4,11 @@ import { PaginationDto } from '../dto/Pagination.dto';
 
 /**
  * @description Base Service
- * @author Md Shah Alam Shamim
+ * @author Jamil Shafayat
  * @version 0.0.2
  * @since 0.0.2
  */
-export default abstract class BaseAdminService<
-  T extends BaseDTO,
-  S = any,
-  V = any,
-> {
+export default abstract class BaseAdminService<T extends BaseDTO, S = any, V = any> {
   abstract findAll(page: PaginationDto, search: S): Promise<[number, T[]]>;
   abstract findMany(page: PaginationDto, search: S): Promise<[number, T[]]>;
   abstract findOne(search: S): Promise<T>;

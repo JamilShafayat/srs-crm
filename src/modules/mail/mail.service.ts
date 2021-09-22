@@ -11,9 +11,9 @@ export class MailService {
 
     await this.mailerService
       .sendMail({
-        to: 'sumonyahoo24@gmail.com',
-        from: 'user@outlook.com', // Senders email address
-        subject: 'Testing Nest MailerModule ✔', // Subject line
+        to: 'code.xamil@gmail.com',
+        from: 'user@outlook.com', // senders email address
+        subject: 'Testing Nest MailerModule ✔', // subject line
         text: 'welcome', // plaintext body
         html: '<b>welcome</b>', // HTML body content
       })

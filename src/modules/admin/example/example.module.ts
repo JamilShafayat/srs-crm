@@ -9,4 +9,5 @@ import { ExampleService } from './services/example.service';
   controllers: [ExampleController],
   providers: [ExampleService, FileUploadService],
 })
+
 export class ExampleModule {}
