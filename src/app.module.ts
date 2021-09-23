@@ -22,7 +22,7 @@ import { PublicModule } from './modules/public/public.module';
 			database: process.env.DATABASE_DB,
 			synchronize:
 				process.env.SYNCHRONIZE && process.env.SYNCHRONIZE === 'true',
-			logging: true, // if true then will log database schema
+			logging: true,
 			dropSchema: false,
 			entities: ['dist/**/*.entity.js'],
 		}),
@@ -39,7 +39,7 @@ import { PublicModule } from './modules/public/public.module';
 		]),
 
 		ConfigModule.forRoot({
-			isGlobal: true, // no need to import into other modules
+			isGlobal: true,
 		}),
 
 		AdminModule,
