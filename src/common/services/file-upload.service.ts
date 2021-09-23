@@ -47,7 +47,6 @@ export class FileUploadService {
 		}
 
 		const path = process.env.DIR + '' + imagePath[1];
-
 		return path;
 	}
 
@@ -122,8 +121,8 @@ export class FileUploadService {
 	 * @version 0.0.2
 	 * @since 0.0.2
 	 * @param {String} token - session token
-	 * @param {stringp[]} currUrls - multiple image
-	 * @param {stringp[]} newUrls - multiple image
+	 * @param {string p[]} currUrls - multiple image
+	 * @param {string p[]} newUrls - multiple image
 	 * @param {String} url - url from image
 	 * @param {String} path - where to save
 	 * @param {String} name - file name
@@ -174,7 +173,7 @@ export class FileUploadService {
 		try {
 			if (!folder) return false;
 			if (!fs.existsSync(process.env.TEMP_FILES_DIR + '/' + folder)) return false
-			
+
 			return true;
 		} catch (err) {
 			return false;
