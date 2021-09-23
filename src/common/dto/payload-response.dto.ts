@@ -4,6 +4,7 @@ export class IMetadata {
   public readonly totalPage?: number;
   public readonly limit: number;
 }
+
 export class MetadataDTO extends IMetadata {
   constructor(
     public readonly page: number,
@@ -47,6 +48,7 @@ export class PayloadResponseDTO {
       ...metadata,
       totalPage: totalPage,
     };
+
     this.data = response.data || {};
   }
 }

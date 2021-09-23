@@ -24,6 +24,7 @@ export class DataTransformGlobalPipe implements PipeTransform {
     });
     return obj;
   }
+	
   trimSubItem(obj, ele) {
     if (typeof obj[ele] === 'string') {
       obj[ele] = obj[ele].trim();

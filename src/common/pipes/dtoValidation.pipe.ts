@@ -25,9 +25,10 @@ export class DtoValidationPipe implements PipeTransform<any> {
       ...this.options,
     };
   }
+
   async transform(value: any, { metatype, type }: ArgumentMetadata) {
     try {
-      console.log('type', type);
+
       if (type === 'body' || type === 'param') {
         this.options = {
           whitelist: true,
@@ -35,6 +36,7 @@ export class DtoValidationPipe implements PipeTransform<any> {
           ...this.options,
         };
       }
+
       if (!metatype || !this.toValidate(metatype)) {
         return value;
       }
@@ -47,7 +49,7 @@ export class DtoValidationPipe implements PipeTransform<any> {
         for (const [index, error] of errors.entries()) {
           const property = error.property;
           const errorCollection = [];
-          //if (error.children && error.children.length) {
+
           if (
             !error.constraints ||
             Object.keys(error.constraints).length === 0
@@ -59,6 +61,7 @@ export class DtoValidationPipe implements PipeTransform<any> {
               message: error.constraints[Object.keys(error.constraints)[0]],
             });
           }
+
           validationErrors.push(...errorCollection);
         }
 
@@ -70,6 +73,7 @@ export class DtoValidationPipe implements PipeTransform<any> {
           throw new ValidationException(validationErrors);
         }
       }
+
       return value;
     } catch (error) {
       throw new CustomException(error);
@@ -80,9 +84,9 @@ export class DtoValidationPipe implements PipeTransform<any> {
     const types = [String, Boolean, Number, Array, Object];
     return !types.includes(metatype);
   }
+
   private findChildError(errorCollection, errors, property) {
     for (const [index, error] of errors.entries()) {
-      //if (error.children && error.children.length) {
       if (!error.constraints || Object.keys(error.constraints).length === 0) {
         const nProperty = '.' + error.property;
         const sProperty = '[' + error.property + ']';

@@ -30,7 +30,7 @@ export class AuthGuard implements CanActivate {
       }
     } catch (e) {
       throw new UnauthorizedException(
-        'Authentication failed. Please Try again! Now',
+        'Authentication failed. Please try again!',
       );
     }
   }

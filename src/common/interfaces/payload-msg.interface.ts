@@ -10,10 +10,6 @@ export interface IPayloadErrorSystems {
   message: string;
 }
 
-/**
- * @interface
- * @since 1.0.0
- */
 export interface IPayloadMSG {
   nonce: number;
   status: number;
