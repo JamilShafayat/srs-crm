@@ -18,12 +18,15 @@ export class CompanyAuthGuard implements CanActivate {
     try {
       const authorizationHeader = req.headers['authorization'];
       let token;
+
       if (authorizationHeader) {
         token = authorizationHeader.split(' ')[1];
       }
+			
       if (token) {
         const jwtDecode = jwt.verify(token, COMPANY_JWT_SECRET);
         req['_user'] = jwtDecode;
+				
         return true;
       } else {
         throw new UnauthorizedException('No token provided');

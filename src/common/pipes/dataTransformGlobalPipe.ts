@@ -7,6 +7,7 @@ export class DataTransformGlobalPipe implements PipeTransform {
       if (typeof value !== 'object' || Array.isArray(value)) {
         console.log('please provide json data');
       }
+
       return this.objectTrim(value);
     } catch (err) {}
   }
@@ -15,6 +16,7 @@ export class DataTransformGlobalPipe implements PipeTransform {
     for (const item in items) {
       this.trimSubItem(items, item);
     }
+
     return items;
   }
 
@@ -22,6 +24,7 @@ export class DataTransformGlobalPipe implements PipeTransform {
     Object.keys(obj).forEach((ele) => {
       this.trimSubItem(obj, ele);
     });
+		
     return obj;
   }
 	

@@ -13,9 +13,11 @@ export class CompanyAuthMiddleware implements NestMiddleware {
     try {
       const authorizationHeader = req.headers['authorization'];
       let token;
+
       if (authorizationHeader) {
         token = authorizationHeader.split(' ')[1];
       }
+			
       if (token) {
         const jwtDecode = jwt.verify(token, COMPANY_JWT_SECRET);
         req.body['_user'] = jwtDecode;

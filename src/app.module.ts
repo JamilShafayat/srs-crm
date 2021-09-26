@@ -63,4 +63,4 @@ import { PublicModule } from './modules/public/public.module';
 	],
 })
 
-export class AppModule { PaginationDto}
+export class AppModule { PaginationDto }

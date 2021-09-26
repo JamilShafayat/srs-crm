@@ -27,6 +27,7 @@ export class FileUploadController {
 			fileFilter: imageFileFilter,
 		}),
 	)
+	
 	uploadSingleFileWithPost(@UploadedFile() file, @Body() body) {
 		console.log(file);
 		const response = file.filename;

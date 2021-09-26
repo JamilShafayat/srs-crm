@@ -11,4 +11,5 @@ const ModuleList = [
 		Module: PublicModuleList
 	}
 ];
+
 export default ModuleList;

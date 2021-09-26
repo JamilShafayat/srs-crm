@@ -13,21 +13,21 @@ import { TestsModule } from './testPart/text.module';
 import { UsersModule } from './users/users.module';
 
 export const AdminModuleList = [
-  AdminAuthModule,
-  UsersModule,
-  FileUploadModule,
-  TestsModule,
-  DesignationModule,
-  ClientModule,
-  EmployeeModule,
-  TeamModule,
-  ProjectModule,
-  TeamEmployeeModule,
-  ComplaintModule,
-  CommentModule,
+	AdminAuthModule,
+	UsersModule,
+	FileUploadModule,
+	TestsModule,
+	DesignationModule,
+	ClientModule,
+	EmployeeModule,
+	TeamModule,
+	ProjectModule,
+	TeamEmployeeModule,
+	ComplaintModule,
+	CommentModule,
 ];
 @Module({
-  imports: AdminModuleList,
+	imports: AdminModuleList,
 })
 
-export class AdminModule {}
+export class AdminModule { }
