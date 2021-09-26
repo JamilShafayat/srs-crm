@@ -42,6 +42,7 @@ export class FileUploadService {
 	 */
 	private async urlToPath(url: string): Promise<string> {
 		const imagePath = url.split(process.env.HOST_URL);
+		
 		if (imagePath.length !== 2) {
 			return undefined;
 		}
